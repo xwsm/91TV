@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.owen.widget.TvVerticalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:vsv_selected_offset_end="30dp"
+    android:background="@drawable/bg1">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="30dp">
+
+        <ImageView
+            android:id="@+id/activity_detail_poster_iv"
+            android:layout_width="180dp"
+            android:layout_height="250dp"
+            android:src="@drawable/ic_launcher_background"
+            android:scaleType="centerCrop"
+            />
+
+        <TextView
+            android:id="@+id/activity_detail_name_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="名称"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="28sp"
+            app:layout_constraintLeft_toRightOf="@id/activity_detail_poster_iv"
+            android:layout_marginLeft="20dp"
+            />
+
+        <TextView
+            android:id="@+id/activity_detail_sketch_tv"
+            style="@style/detail_text"
+            android:text="名称"
+            app:layout_constraintLeft_toRightOf="@id/activity_detail_name_tv"
+            app:layout_constraintBottom_toBottomOf="@id/activity_detail_name_tv"
+            />
+
+        <TextView
+            android:id="@+id/activity_detail_alias_tv"
+            style="@style/detail_text"
+            android:text="名称"
+            android:layout_marginTop="20dp"
+            app:layout_constraintLeft_toRightOf="@id/activity_detail_poster_iv"
+            app:layout_constraintTop_toBottomOf="@id/activity_detail_name_tv"
+            />
+
+        <TextView
+            android:id="@+id/activity_detail_director_tv"
+            style="@style/detail_text"
+            android:text="名称"
+            app:layout_constraintLeft_toRightOf="@id/activity_detail_poster_iv"
+            app:layout_constraintTop_toBottomOf="@id/activity_detail_alias_tv"
+            />
+
+        <TextView
+            android:id="@+id/activity_detail_starring_tv"
+            style="@style/detail_text"
+            android:text="名称"
+            app:layout_constraintLeft_toRightOf="@id/activity_detail_poster_iv"
+            app:layout_constraintTop_toBottomOf="@id/activity_detail_director_tv"
+            />
+
+        <TextView
+            android:id="@+id/activity_detail_type_tv"
+            style="@style/detail_text"
+            android:text="名称"
+            app:layout_constraintLeft_toRightOf="@id/activity_detail_poster_iv"
+            app:layout_constraintTop_toBottomOf="@id/activity_detail_starring_tv"
+            />
+
+        <TextView
+            android:id="@+id/activity_detail_area_tv"
+            style="@style/detail_text"
+            android:text="名称名称名称名称名称"
+            app:layout_constraintLeft_toRightOf="@id/activity_detail_poster_iv"
+            app:layout_constraintBottom_toBottomOf="@id/activity_detail_type_tv"
+            android:layout_marginLeft="300dp"
+            />
+
+        <TextView
+            android:id="@+id/activity_detail_language_tv"
+            style="@style/detail_text"
+            android:text="名称"
+            app:layout_constraintLeft_toRightOf="@id/activity_detail_poster_iv"
+            app:layout_constraintBottom_toBottomOf="@id/activity_detail_area_tv"
+            android:layout_marginLeft="600dp"
+            />
+
+        <TextView
+            android:id="@+id/activity_detail_show_date_tv"
+            style="@style/detail_text"
+            android:text="名称"
+            app:layout_constraintLeft_toRightOf="@id/activity_detail_poster_iv"
+            app:layout_constraintTop_toBottomOf="@id/activity_detail_type_tv"
+            />
+
+        <TextView
+            android:id="@+id/activity_detail_duration_tv"
+            style="@style/detail_text"
+            android:text="名称"
+            app:layout_constraintLeft_toRightOf="@id/activity_detail_poster_iv"
+            app:layout_constraintTop_toBottomOf="@id/activity_detail_type_tv"
+            android:layout_marginLeft="300dp"
+            />
+
+        <TextView
+            android:id="@+id/activity_detail_update_date_tv"
+            style="@style/detail_text"
+            android:text="名称"
+            app:layout_constraintLeft_toRightOf="@id/activity_detail_poster_iv"
+            app:layout_constraintTop_toBottomOf="@id/activity_detail_type_tv"
+            android:layout_marginLeft="600dp"
+            />
+
+        <TextView
+            android:id="@+id/activity_detail_intro_tv"
+            style="@style/detail_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="0dp"
+            android:maxLines="3"
+            app:layout_constraintTop_toBottomOf="@id/activity_detail_poster_iv"
+            />
+
+        <TextView
+            android:id="@+id/activity_detail_play_list_title1_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/activity_detail_intro_tv"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/color_ffdddddd"
+            android:textSize="22sp"/>
+
+        <com.owen.tvrecyclerview.widget.TvRecyclerView
+            android:id="@+id/activity_detail_play_list1_rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="14dp"
+            app:tv_verticalSpacingWithMargins="10dp"
+            app:tv_horizontalSpacingWithMargins="10dp"
+            app:spanCount="1"
+            app:tv_layoutManager="V7GridLayoutManager"
+            app:tv_selectedItemIsCentered="true"
+            app:layout_constraintTop_toBottomOf="@id/activity_detail_play_list_title1_tv"
+            />
+
+        <TextView
+            android:id="@+id/activity_detail_play_list_title2_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/activity_detail_play_list1_rv"
+            android:textColor="@color/color_ffdddddd"
+            android:textSize="22sp"/>
+
+        <com.owen.tvrecyclerview.widget.TvRecyclerView
+            android:id="@+id/activity_detail_play_list2_rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="14dp"
+            app:tv_verticalSpacingWithMargins="10dp"
+            app:tv_horizontalSpacingWithMargins="10dp"
+            app:spanCount="1"
+            app:tv_layoutManager="V7GridLayoutManager"
+            app:tv_selectedItemIsCentered="true"
+            app:layout_constraintTop_toBottomOf="@id/activity_detail_play_list_title2_tv"
+            />
+
+        <TextView
+            android:id="@+id/activity_detail_play_list_title3_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/activity_detail_play_list2_rv"
+            android:textColor="@color/color_ffdddddd"
+            android:textSize="22sp"/>
+
+        <com.owen.tvrecyclerview.widget.TvRecyclerView
+            android:id="@+id/activity_detail_play_list3_rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="14dp"
+            app:tv_verticalSpacingWithMargins="10dp"
+            app:tv_horizontalSpacingWithMargins="10dp"
+            app:spanCount="1"
+            app:tv_layoutManager="V7GridLayoutManager"
+            app:tv_selectedItemIsCentered="true"
+            app:layout_constraintTop_toBottomOf="@id/activity_detail_play_list_title3_tv"
+            />
+
+    </android.support.constraint.ConstraintLayout>
+
+</com.owen.widget.TvVerticalScrollView>

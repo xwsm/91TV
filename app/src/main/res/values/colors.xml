@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+
+    <color name="white">#ffffffff</color>
+    <color name="white_80_alpha">#CCFFFFFF</color>
+    <color name="light_green">#ffbdff32</color>
+    <color name="dark_gray">#ff7e7e7e</color>
+    <color name="orange">#fff06d00</color>
+    <color name="dark_green">#ff69940e</color>
+    <color name="transparent">#00000000</color>
+    <color name="line_blue">#ff0f4d70</color>
+    <color name="select_back_color">#ff303030</color>
+    <color name="red">#ffff0000</color>
+    <color name="black_color">#ff000000</color>
+    <color name="gray_line">#ffd7d7d7</color>
+    <color name="selector_gray">#ffd1cdcd</color>
+    <color name="gray">#fff6f6f6</color>
+    <color name="black_gray">#ff666666</color>
+    <color name="deep_gray">#ff363636</color>
+    <color name="light_gray">#ff9a9a9a</color>
+    <color name="text_gray">#ff999999</color>
+    <color name="text_blue">#ff0075c4</color>
+    <color name="text_blue_thirdlogin">#1E7DD7</color>
+    <color name="circle_image_boder_person">#2DFFFFFF</color>
+    <color name="circle_image_boder">#dddddd</color>
+
+    <!-- v2 -->
+    <color name="color_dddada">#DDDADA</color>
+    <color name="black_normal">#ff333333</color>
+    <color name="score_color">#ff659d0e</color>
+    <color name="orange_color">#ffff8600</color>
+    <color name="search_rating_color">#fff15252</color>
+    <color name="search_result_nocinema_text_normal_color">#ff777777</color>
+    <color name="color_ffdddddd">#ffdddddd</color>
+    <color name="gray_normal">#ff777777</color>
+    <color name="color_bbbbbb">#ffbbbbbb</color>
+    <color name="color_ffd8d8d8">#ffd8d8d8</color>
+    <color name="color_bb858585">#bb858585</color>
+    <color name="color_707070">#707070</color>
+    <color name="color_ff7f00">#ff7f00</color>
+    <color name="color_ebebeb">#ebebeb</color>
+    <color name="color_3bb0ff">#3bb0ff</color>
+    <color name="color_0ac3cc">#0ac3cc</color>
+    <color name="color_4ea2ff">#4ea2ff</color>
+</resources>
