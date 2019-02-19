@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.owen.adapter.CommonRecyclerViewAdapter;
 import com.owen.adapter.CommonRecyclerViewHolder;
-import com.owen.data.resource.MovieDetailBean;
+import com.owen.tv91.bean.Movie;
 
 import java.util.List;
 
@@ -17,9 +17,9 @@ import java.util.List;
  * @email zhousuqiang@126.com
  * @date 2019/1/18
  */
-public class MovieListAdapter extends CommonRecyclerViewAdapter<MovieDetailBean> {
+public class MovieListAdapter extends CommonRecyclerViewAdapter<Movie> {
 
-    public MovieListAdapter(Context context, List<MovieDetailBean> datas) {
+    public MovieListAdapter(Context context, List<Movie> datas) {
         super(context, datas);
     }
 
@@ -29,7 +29,7 @@ public class MovieListAdapter extends CommonRecyclerViewAdapter<MovieDetailBean>
     }
 
     @Override
-    public void onBindItemHolder(CommonRecyclerViewHolder helper, MovieDetailBean item, int position) {
+    public void onBindItemHolder(CommonRecyclerViewHolder helper, Movie item, int position) {
         helper.getHolder().setText(R.id.item_name_tv, item.name)
                 .setText(R.id.item_sketch_tv, item.sketch)
                 .setText(R.id.item_score_tv, item.score)

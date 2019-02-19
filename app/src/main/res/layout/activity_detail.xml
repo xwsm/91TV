@@ -9,7 +9,7 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="30dp">
+        android:padding="60dp">
 
         <ImageView
             android:id="@+id/activity_detail_poster_iv"
@@ -27,7 +27,7 @@
             android:textColor="@color/colorPrimaryDark"
             android:textSize="28sp"
             app:layout_constraintLeft_toRightOf="@id/activity_detail_poster_iv"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="40dp"
             />
 
         <TextView
@@ -121,6 +121,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="0dp"
+            android:layout_marginTop="20dp"
             android:maxLines="3"
             app:layout_constraintTop_toBottomOf="@id/activity_detail_poster_iv"
             />
@@ -130,7 +131,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/activity_detail_intro_tv"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="30dp"
             android:textColor="@color/color_ffdddddd"
             android:textSize="22sp"/>
 

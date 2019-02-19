@@ -1,57 +1,224 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg1"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <Button
-        android:id="@+id/activity_search_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="30dp"
-        android:layout_marginRight="30dp"
-        android:text="搜索"/>
 
     <EditText
         android:id="@+id/activity_search_et"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/search_button"
+        app:layout_constraintRight_toRightOf="@id/activity_search_keyboard_tvgl"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginLeft="30dp"
-        android:imeOptions="actionNone"
-        android:focusable="true"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="70dp"
+        android:layout_marginRight="10dp"
+        android:focusable="false"
+        android:clickable="false"
         />
+
+    <com.owen.tvgridlayout.TvGridLayout
+        android:id="@+id/activity_search_keyboard_tvgl"
+        android:layout_width="340dp"
+        android:layout_height="400dp"
+        android:layout_marginLeft="60dp"
+        android:padding="10dp"
+        app:columnCount="6"
+        app:horizontalSpacing="6dp"
+        app:verticalSpacing="6dp"
+        app:alignmentMode="alignBounds"
+        app:columnOrderPreserved="true"
+        app:rowOrderPreserved="true"
+        app:orientation="horizontal"
+        app:useDefaultMargins="false"
+        app:layout_constraintTop_toBottomOf="@id/activity_search_et"
+        app:layout_constraintLeft_toLeftOf="parent">
+
+        <Button
+            style="@style/keyboard_item_text"
+            app:layout_columnSpan="3"
+            android:text="清空"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            app:layout_columnSpan="3"
+            android:text="删除"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="A"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="B"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="C"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="D"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="E"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="F"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="G"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="H"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="I"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="J"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="K"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="L"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="M"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="N"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="O"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="P"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="Q"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="R"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="S"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="T"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="U"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="V"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="W"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="X"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="Y"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="Z"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="1"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="2"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="3"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="4"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="5"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="6"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="7"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="8"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="9"/>
+
+        <Button
+            style="@style/keyboard_item_text"
+            android:text="0"/>
+
+    </com.owen.tvgridlayout.TvGridLayout>
 
     <com.owen.tvrecyclerview.widget.TvRecyclerView
         android:id="@+id/activity_search_list"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/activity_search_et"
+        app:layout_constraintLeft_toRightOf="@id/activity_search_keyboard_tvgl"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:paddingLeft="30dp"
-        android:paddingRight="30dp"
-        android:paddingTop="20dp"
-        android:paddingBottom="20dp"
+        android:paddingLeft="60dp"
+        android:paddingRight="60dp"
+        android:paddingTop="50dp"
+        android:paddingBottom="40dp"
         android:orientation="vertical"
-        app:tv_verticalSpacingWithMargins="14dp"
-        app:tv_horizontalSpacingWithMargins="14dp"
-        app:spanCount="8"
+        app:tv_verticalSpacingWithMargins="16dp"
+        app:tv_horizontalSpacingWithMargins="16dp"
+        app:spanCount="4"
         app:tv_layoutManager="V7GridLayoutManager"/>
 
     <ProgressBar
         android:id="@+id/activity_search_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="@id/activity_search_list"
+        app:layout_constraintRight_toRightOf="@id/activity_search_list"
+        app:layout_constraintLeft_toLeftOf="@id/activity_search_list"
+        app:layout_constraintBottom_toBottomOf="@id/activity_search_list"
         android:visibility="gone"
         android:layout_gravity="center"/>
 

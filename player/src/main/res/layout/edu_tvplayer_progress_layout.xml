@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/x28"
+        android:background="@drawable/edu_tvplayer_progress_bg"
+        android:paddingTop="@dimen/x4"
+        android:paddingBottom="@dimen/x4"
+        android:paddingLeft="@dimen/x8"
+        android:paddingRight="@dimen/x20">
+
+        <TextView
+            android:id="@+id/tv_media_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/x12"
+            android:text="视频名称"
+            android:textColor="@color/edu_tvplayer_btn_pressed"
+            android:textSize="@dimen/x24"/>
+
+        <TextView
+            android:id="@+id/tv_curr_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="时间：12:32"
+            android:textColor="@color/edu_tvplayer_btn_pressed"
+            android:textSize="@dimen/x24"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/tv_media_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_below="@id/tv_media_name"
+            android:text="12:32"
+            android:textColor="@color/edu_tvplayer_text_white"
+            android:textSize="@dimen/x24"/>
+
+        <!--android:thumb="@drawable/edu_tvplayer_seekbar_thumb"-->
+        <SeekBar
+            android:id="@+id/seek_bar_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_media_name"
+            android:layout_marginRight="@dimen/x4"
+            android:layout_marginTop="@dimen/x2"
+            android:layout_toLeftOf="@id/tv_media_duration"
+            android:max="1000"
+            android:progressDrawable="@drawable/edu_tvplayer_seekbar_style"/>
+
+        <TextView
+            android:id="@+id/tv_media_curr_position"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/seek_bar_progress"
+            android:text="22:22"
+            android:textColor="@color/edu_tvplayer_text_white"
+            android:textSize="@dimen/x24"/>
+
+    </RelativeLayout>
+
+</FrameLayout>

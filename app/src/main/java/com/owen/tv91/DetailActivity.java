@@ -14,15 +14,26 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.owen.adapter.CommonRecyclerViewAdapter;
 import com.owen.adapter.CommonRecyclerViewHolder;
-import com.owen.data.resource.MovieDetailBean;
+import com.owen.player.PlayerSettings;
+import com.owen.player.bean.MediaBean;
+import com.owen.tv91.bean.MovieDetail;
+import com.owen.tv91.bean.PlaySource;
+import com.owen.tv91.bean.PlayUrl;
+import com.owen.tv91.network.NetWorkManager;
+import com.owen.tv91.network.response.ResponseTransformer;
+import com.owen.tv91.network.schedulers.SchedulerProvider;
+import com.owen.tv91.utils.ToastUtils;
 import com.owen.tvrecyclerview.widget.SimpleOnItemListener;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.BindViews;
 import butterknife.ButterKnife;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 /**
  * @author ZhouSuQiang
@@ -30,7 +41,6 @@ import butterknife.ButterKnife;
  * @date 2019/1/17
  */
 public class DetailActivity extends AppCompatActivity {
-    public static MovieDetailBean sMovieDetailBean;
 
     @BindView(R.id.activity_detail_poster_iv)
     public ImageView mPosterIv;
@@ -64,50 +74,77 @@ public class DetailActivity extends AppCompatActivity {
     TextView[] mPlayTitleTvs;
     @BindViews({R.id.activity_detail_play_list1_rv, R.id.activity_detail_play_list2_rv, R.id.activity_detail_play_list3_rv})
     TvRecyclerView[] mPlayListRvs;
+    
+    private MovieDetail mMovieDetail;
+    private Disposable mDisposable;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
-//        String detailUrl = getIntent().getStringExtra("detailUrl");
+        long id = getIntent().getLongExtra("id", 0);
 
-        setData();
+
+        mDisposable = NetWorkManager.getRequest().detail(id)
+                .compose(SchedulerProvider.getInstance().applySchedulers())
+                .compose(ResponseTransformer.handleResult())
+                .subscribe(new Consumer<MovieDetail>() {
+                    @Override
+                    public void accept(MovieDetail movieDetail) throws Exception {
+                        mMovieDetail = movieDetail;
+                        setData();
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        ToastUtils.showShortToast("获取影片详情数据失败！");
+                    }
+                });
+
     }
 
     private void setData() {
-        if(null != sMovieDetailBean) {
-            Glide.with(this).load(sMovieDetailBean.img).into(mPosterIv);
-            mNameTv.setText(sMovieDetailBean.name);
-            mSketchTv.setText(sMovieDetailBean.sketch);
-            mAliasTv.setText(sMovieDetailBean.alias);
-            mDirectorTv.setText(sMovieDetailBean.director);
-            mStarringTv.setText(sMovieDetailBean.starring);
-            mTypeTv.setText(sMovieDetailBean.type);
-            mAreaTv.setText(sMovieDetailBean.area);
-            mLanguageTv.setText(sMovieDetailBean.language);
-            mShowDateTv.setText(sMovieDetailBean.showDate);
-            mDurationTv.setText(sMovieDetailBean.duration);
-            mUpdateDateTv.setText(sMovieDetailBean.updateDate);
-            mIntroTv.setText("剧情简介：" + sMovieDetailBean.intro);
+        if(null != mMovieDetail) {
+            Glide.with(this).load(mMovieDetail.img).into(mPosterIv);
+            mNameTv.setText(mMovieDetail.name);
+            mSketchTv.setText(mMovieDetail.sketch);
+            mAliasTv.setText(mMovieDetail.alias);
+            mDirectorTv.setText(mMovieDetail.director);
+            mStarringTv.setText(mMovieDetail.starring);
+            mTypeTv.setText(mMovieDetail.type);
+            mAreaTv.setText(mMovieDetail.area);
+            mLanguageTv.setText(mMovieDetail.language);
+            mShowDateTv.setText(mMovieDetail.showDate);
+            mDurationTv.setText(mMovieDetail.duration);
+            mUpdateDateTv.setText(mMovieDetail.updateDate);
+            mIntroTv.setText("剧情简介：" + mMovieDetail.intro);
 
-            if(sMovieDetailBean.hasPlaySources()) {
-                int size = sMovieDetailBean.playSources.size() > mPlayTitleTvs.length ? mPlayTitleTvs.length : sMovieDetailBean.playSources.size();
+            if(mMovieDetail.hasPlaySources()) {
+                int size = mMovieDetail.playSources.size() > mPlayTitleTvs.length ? mPlayTitleTvs.length : mMovieDetail.playSources.size();
                 for(int i=0; i<size; i++) {
-                    final MovieDetailBean.PlaySource playSource = sMovieDetailBean.playSources.get(i);
+                    final PlaySource playSource = mMovieDetail.playSources.get(i);
                     mPlayTitleTvs[i].setText("来源：" + playSource.name);
-                    mPlayListRvs[i].setAdapter(new PlayUrlAdapter(this, playSource.urls));
+                    mPlayListRvs[i].setAdapter(new PlayUrlAdapter(this, playSource.playUrls));
 
                     mPlayListRvs[i].setOnItemListener(new SimpleOnItemListener() {
                         @Override
                         public void onItemClick(TvRecyclerView parent, View itemView, int position) {
-                            String url = playSource.urls.get(position).url;
-                            String extension = MimeTypeMap.getFileExtensionFromUrl(url);
-                            String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-//                            String mimeType = "video/*";
-                            Intent mediaIntent = new Intent(Intent.ACTION_VIEW);
-                            mediaIntent.setDataAndType(Uri.parse(url), mimeType);
-                            startActivity(mediaIntent);
+                            List<MediaBean> data = new ArrayList<>();
+                            MediaBean bean;
+                            for(PlayUrl playUrl : playSource.playUrls) {
+                                bean = new MediaBean();
+                                bean.id = mMovieDetail.id + "";
+                                bean.name = mMovieDetail.name;
+                                bean.playUrl = playUrl.playUrl;
+                                bean.playName = playUrl.name;
+                                data.add(bean);
+                            }
+                            PlayerSettings.getInstance(getApplicationContext())
+                                    .setPlayerType(PlayerSettings.PLAYER_TYPE_ANDROID)
+                                    .setMediaList(data)
+                                    .setPlayIndex(position)
+                                    .startPlayer(DetailActivity.this);
                         }
                     });
                 }
@@ -126,13 +163,15 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        sMovieDetailBean = null;
+        if(null != mDisposable && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
+        }
     }
 
 
-    class PlayUrlAdapter extends CommonRecyclerViewAdapter<MovieDetailBean.PlayUrl> {
+    class PlayUrlAdapter extends CommonRecyclerViewAdapter<PlayUrl> {
 
-        public PlayUrlAdapter(Context context, List<MovieDetailBean.PlayUrl> datas) {
+        public PlayUrlAdapter(Context context, List<PlayUrl> datas) {
             super(context, datas);
         }
 
@@ -142,7 +181,7 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindItemHolder(CommonRecyclerViewHolder helper, MovieDetailBean.PlayUrl item, int position) {
+        public void onBindItemHolder(CommonRecyclerViewHolder helper, PlayUrl item, int position) {
             helper.getHolder().setText(R.id.item_detail_play_list_url_tv, item.name);
         }
     }

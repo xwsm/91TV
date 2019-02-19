@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content">
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminateDrawable="@drawable/edu_tvplayer_loading_progressbar_circle"
+        android:indeterminateDuration="1000"
+        android:maxHeight="@dimen/x106"
+        android:maxWidth="@dimen/x106"
+        android:minHeight="@dimen/x106"
+        android:minWidth="@dimen/x106"/>
+
+    <TextView
+        android:id="@+id/tv_loading_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/edu_tvplayer_loading_text"
+        android:textColor="@color/edu_tvplayer_text_white"
+        android:textSize="@dimen/x20"/>
+
+</FrameLayout>

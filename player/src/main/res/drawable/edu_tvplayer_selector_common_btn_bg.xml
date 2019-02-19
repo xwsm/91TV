@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 选中时的图片背景 -->
+    <item android:drawable="@drawable/edu_tvplayer_common_button_2" android:state_selected="true"/>
+    <!-- 非触摸模式下获得焦点并单击时的背景图片 -->
+    <item android:drawable="@drawable/edu_tvplayer_common_button_2" android:state_focused="true"/>
+    <item android:drawable="@drawable/edu_tvplayer_common_button_1" />
+</selector>

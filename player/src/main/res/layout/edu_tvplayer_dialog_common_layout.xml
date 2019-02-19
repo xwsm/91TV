@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="@dimen/x560"
+                android:layout_height="@dimen/x320"
+                android:layout_gravity="center"
+                android:background="@drawable/edu_tvplayer_dialog_bg">
+
+    <LinearLayout
+        android:id="@+id/dialog_btn_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/y20"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/dialog_btn1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="@dimen/x140"
+            android:background="@drawable/edu_tvplayer_selector_common_btn_bg"
+            android:gravity="center"
+            android:textColor="#000000"
+            android:textSize="@dimen/x22"/>
+
+        <Button
+            android:id="@+id/dialog_btn2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="@dimen/x140"
+            android:layout_marginLeft="@dimen/x46"
+            android:background="@drawable/edu_tvplayer_selector_common_btn_bg"
+            android:gravity="center"
+            android:textColor="#000000"
+            android:textSize="@dimen/x22"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/dialog_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/dialog_btn_layout"
+        android:layout_margin="@dimen/x22"
+        android:gravity="center"
+        android:textColor="#000000"
+        android:textSize="@dimen/x26"/>
+
+</RelativeLayout>

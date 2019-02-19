@@ -1,37 +1,33 @@
 package com.owen.tv91;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
-import com.owen.data.resource.DataResParser;
-import com.owen.data.resource.MovieDetailBean;
-import com.owen.focus.AbsFocusBorder;
 import com.owen.focus.FocusBorder;
+import com.owen.tv91.bean.Movie;
+import com.owen.tv91.network.NetWorkManager;
+import com.owen.tv91.network.response.ResponseTransformer;
+import com.owen.tv91.network.schedulers.SchedulerProvider;
+import com.owen.tv91.utils.ToastUtils;
+import com.owen.tvgridlayout.TvGridLayout;
 import com.owen.tvrecyclerview.widget.SimpleOnItemListener;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author ZhouSuQiang
@@ -40,17 +36,17 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class SearchActivity extends AppCompatActivity {
 
-    @BindView(R.id.activity_search_button)
-    Button mSearchBtn;
     @BindView(R.id.activity_search_et)
     EditText mSearchEt;
     @BindView(R.id.activity_search_list)
     TvRecyclerView mRecyclerView;
     @BindView(R.id.activity_search_progress_bar)
     ProgressBar mProgressBar;
+    @BindView(R.id.activity_search_keyboard_tvgl)
+    TvGridLayout mTvGridLayout;
 
     private FocusBorder mFocusBorder;
-    private List<MovieDetailBean> mMovieDetailBeans;
+    private List<Movie> mMovies = new ArrayList<>();
     private Disposable mSearchDisposable;
 
     @Override
@@ -61,50 +57,12 @@ public class SearchActivity extends AppCompatActivity {
 
         mFocusBorder = FocusBroderHelper.create(this);
 
-        mSearchBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final String word = mSearchEt.getText().toString();
-                if(!TextUtils.isEmpty(word)) {
-                    if(null != mSearchDisposable && !mSearchDisposable.isDisposed()) {
-                        mSearchDisposable.dispose();
-                    }
-                    mProgressBar.setVisibility(View.VISIBLE);
-                    mRecyclerView.setVisibility(View.GONE);
-                    mSearchDisposable = Observable.create(new ObservableOnSubscribe<List<MovieDetailBean>>() {
-                        @Override
-                        public void subscribe(ObservableEmitter<List<MovieDetailBean>> observableEmitter) throws Exception {
-                            observableEmitter.onNext(DataResParser.search(word));
-                            observableEmitter.onComplete();
-                        }
-                    }).subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new Consumer<List<MovieDetailBean>>() {
-                                @Override
-                                public void accept(List<MovieDetailBean> movieDetailBeans) throws Exception {
-                                    Log.i("zsq", "成功");
-                                    mProgressBar.setVisibility(View.GONE);
-                                    mRecyclerView.setVisibility(View.VISIBLE);
-                                    mMovieDetailBeans = movieDetailBeans;
-                                    mRecyclerView.setAdapter(new MovieListAdapter(SearchActivity.this, movieDetailBeans));
-                                }
-                            }, new Consumer<Throwable>() {
-                                @Override
-                                public void accept(Throwable throwable) throws Exception {
-                                    mProgressBar.setVisibility(View.GONE);
-                                    mRecyclerView.setVisibility(View.VISIBLE);
-                                }
-                            });
-                }
-            }
-        });
-
-
         mRecyclerView.setOnItemListener(new SimpleOnItemListener() {
             @Override
             public void onItemClick(TvRecyclerView parent, View itemView, int position) {
-                DetailActivity.sMovieDetailBean = mMovieDetailBeans.get(position);
-                startActivity(new Intent(SearchActivity.this, DetailActivity.class));
+                Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
+                intent.putExtra("id", mMovies.get(position).id);
+                startActivity(intent);
             }
         });
 
@@ -115,6 +73,59 @@ public class SearchActivity extends AppCompatActivity {
                 return FocusBorder.OptionsFactory.get(1.1f, 1.1f);
             }
         });
+
+        mTvGridLayout.setOnItemListener(new com.owen.tvgridlayout.SimpleOnItemListener() {
+            @Override
+            public void onItemClick(TvGridLayout parent, View itemView, int position) {
+                if(position == 0) {
+                    mSearchEt.setText("");
+                } else if(position == 1) {
+                    String old = mSearchEt.getText().toString();
+                    if(!TextUtils.isEmpty(old)) {
+                        char[] chars = old.toCharArray();
+                        mSearchEt.setText(chars, 0,chars.length - 1);
+                    }
+                } else {
+                    String old = mSearchEt.getText().toString();
+                    mSearchEt.setText(old + ((TextView)itemView).getText().toString());
+                }
+                onSearch();
+            }
+        });
+    }
+
+    private void onSearch() {
+        final String word = mSearchEt.getText().toString();
+        if(!TextUtils.isEmpty(word)) {
+            if(null != mSearchDisposable && !mSearchDisposable.isDisposed()) {
+                mSearchDisposable.dispose();
+            }
+            mProgressBar.setVisibility(View.VISIBLE);
+            mRecyclerView.setVisibility(View.GONE);
+            mSearchDisposable = NetWorkManager.getRequest().search(word)
+                    .compose(SchedulerProvider.getInstance().applySchedulers())
+                    .compose(ResponseTransformer.handleResult())
+                    .subscribe(new Consumer<List<Movie>>() {
+                        @Override
+                        public void accept(List<Movie> movies) throws Exception {
+                            mProgressBar.setVisibility(View.GONE);
+                            mRecyclerView.setVisibility(View.VISIBLE);
+                            mMovies = movies;
+                            mRecyclerView.setAdapter(new MovieListAdapter(SearchActivity.this, movies));
+                        }
+                    }, new Consumer<Throwable>() {
+                        @Override
+                        public void accept(Throwable throwable) throws Exception {
+                            ToastUtils.showShortToast("搜索失败！");
+                        }
+                    });
+
+        } else {
+            if(null != mRecyclerView.getAdapter()) {
+                mMovies.clear();
+                mRecyclerView.getAdapter().notifyDataSetChanged();
+            }
+        }
     }
 
     @Override

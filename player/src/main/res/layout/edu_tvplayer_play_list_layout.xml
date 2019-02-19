@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content">
+
+    <LinearLayout
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_margin="@dimen/x28"
+                  android:background="@drawable/edu_tvplayer_play_list_bg"
+                  android:orientation="vertical"
+                  android:padding="@dimen/x10">
+
+        <TextView
+            android:id="@+id/tv_media_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="名称"
+            android:textColor="@color/edu_tvplayer_text_white"
+            android:textSize="@dimen/x26"/>
+
+        <com.owen.tvrecyclerview.widget.TvRecyclerView
+            android:id="@+id/gd_play_list"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/y50"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:paddingLeft="14dp"
+            android:paddingRight="14dp"
+            app:tv_selectedItemIsCentered="true"
+            app:tv_horizontalSpacingWithMargins="10dp"
+            app:tv_layoutManager="V7LinearLayoutManager"/>
+
+        <!--<GridView
+            android:id="@+id/gd_play_list"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/y50"
+            android:layout_marginTop="@dimen/x10"
+            android:horizontalSpacing="@dimen/x10"
+            android:verticalSpacing="@dimen/x10"
+            android:listSelector="#00000000"
+            android:numColumns="10"
+            android:scrollbars="none"/>-->
+
+    </LinearLayout>
+</FrameLayout>

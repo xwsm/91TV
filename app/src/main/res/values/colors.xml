@@ -28,7 +28,7 @@
     <color name="circle_image_boder">#dddddd</color>
 
     <!-- v2 -->
-    <color name="color_dddada">#DDDADA</color>
+    <color name="color_dddada">#DADADA</color>
     <color name="black_normal">#ff333333</color>
     <color name="score_color">#ff659d0e</color>
     <color name="orange_color">#ffff8600</color>
@@ -45,4 +45,6 @@
     <color name="color_3bb0ff">#3bb0ff</color>
     <color name="color_0ac3cc">#0ac3cc</color>
     <color name="color_4ea2ff">#4ea2ff</color>
+
+    <color name="keyboard_item_bg">#ffd8d8d8</color>
 </resources>

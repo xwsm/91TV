@@ -6,30 +6,24 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.owen.data.resource.DataResParser;
-import com.owen.data.resource.MovieDetailBean;
-import com.owen.data.resource.NavigationBean;
 import com.owen.tab.TvTabLayout;
+import com.owen.tv91.bean.Channel;
+import com.owen.tv91.network.NetWorkManager;
+import com.owen.tv91.network.response.ResponseTransformer;
+import com.owen.tv91.network.schedulers.SchedulerProvider;
+import com.owen.tv91.utils.ToastUtils;
 import com.owen.widget.TvViewPager;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
     @BindView(R.id.search_button)
@@ -39,10 +33,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.activity_main_view_pager)
     TvViewPager mViewPager;
 
-    private List<NavigationBean> mNavigationList;
-    private List<MovieDetailBean> mMovieDetailBeans;
-
-    private Disposable mMovieListSubscribe;
+    private Disposable mDisposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,37 +69,26 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Disposable disposable = Observable.create(new ObservableOnSubscribe<List<NavigationBean>>() {
-            @Override
-            public void subscribe(ObservableEmitter<List<NavigationBean>> observableEmitter) throws Exception {
-                observableEmitter.onNext(DataResParser.getNavigations());
-                observableEmitter.onComplete();
-            }
-        }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<List<NavigationBean>>() {
+        mDisposable = NetWorkManager.getRequest().channels()
+                .compose(SchedulerProvider.getInstance().applySchedulers())
+                .compose(ResponseTransformer.handleResult())
+                .subscribe(new Consumer<List<Channel>>() {
                     @Override
-                    public void accept(List<NavigationBean> navigationBeans) throws Exception {
-                        mNavigationList = navigationBeans;
-                        Log.i("zsq", "导航 成功" + mNavigationList);
-//                        for (NavigationBean nav : navigationBeans) {
-//                            mTabLayout.addTab(mTabLayout.newTab().setText(nav.name));
-//                        }
-
-                        mViewPager.setAdapter(new PagerAdapter(getSupportFragmentManager(), navigationBeans));
+                    public void accept(List<Channel> channels) throws Exception {
+                        mViewPager.setAdapter(new PagerAdapter(getSupportFragmentManager(), channels));
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        Log.i("zsq", "导航 失败..." + throwable);
+                        ToastUtils.showShortToast("加载导航失败！");
                     }
                 });
     }
 
     class PagerAdapter extends FragmentPagerAdapter {
-        private List<NavigationBean> mNavs;
+        private List<Channel> mNavs;
 
-        public PagerAdapter(FragmentManager fm, List<NavigationBean> navs) {
+        public PagerAdapter(FragmentManager fm, List<Channel> navs) {
             super(fm);
             mNavs = navs;
         }
@@ -116,12 +96,12 @@ public class MainActivity extends AppCompatActivity {
         @Nullable
         @Override
         public CharSequence getPageTitle(int position) {
-            return mNavs.get(position).name;
+            return mNavs.get(position).channel;
         }
 
         @Override
         public Fragment getItem(int i) {
-            return MovieListFragment.newInstance(mNavs.get(i).url);
+            return MovieListFragment.newInstance(mNavs.get(i));
         }
 
         @Override

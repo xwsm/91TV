@@ -1,1 +1,1 @@
-include ':app', ':data_resource'
+include ':app', ':player'
