@@ -109,15 +109,15 @@ public class DetailActivity extends AppCompatActivity {
             Glide.with(this).load(mMovieDetail.img).into(mPosterIv);
             mNameTv.setText(mMovieDetail.name);
             mSketchTv.setText(mMovieDetail.sketch);
-            mAliasTv.setText(mMovieDetail.alias);
-            mDirectorTv.setText(mMovieDetail.director);
-            mStarringTv.setText(mMovieDetail.starring);
-            mTypeTv.setText(mMovieDetail.type);
-            mAreaTv.setText(mMovieDetail.area);
-            mLanguageTv.setText(mMovieDetail.language);
-            mShowDateTv.setText(mMovieDetail.showDate);
-            mDurationTv.setText(mMovieDetail.duration);
-            mUpdateDateTv.setText(mMovieDetail.updateDate);
+            mAliasTv.setText("别名：" + mMovieDetail.alias);
+            mDirectorTv.setText("导演：" + mMovieDetail.director);
+            mStarringTv.setText("主演：" + mMovieDetail.starring);
+            mTypeTv.setText("类型：" + mMovieDetail.type);
+            mAreaTv.setText("区域：" + mMovieDetail.area);
+            mLanguageTv.setText("语言：" + mMovieDetail.language);
+            mShowDateTv.setText("上映：" + mMovieDetail.showDate);
+            mDurationTv.setText("时长：" + mMovieDetail.duration);
+            mUpdateDateTv.setText("更新：" + mMovieDetail.updateDate);
             mIntroTv.setText("剧情简介：" + mMovieDetail.intro);
 
             if(mMovieDetail.hasPlaySources()) {

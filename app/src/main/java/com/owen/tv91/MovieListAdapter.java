@@ -35,6 +35,6 @@ public class MovieListAdapter extends CommonRecyclerViewAdapter<Movie> {
                 .setText(R.id.item_score_tv, item.score)
                 .setVisibility(R.id.item_score_tv, (TextUtils.isEmpty(item.score) || TextUtils.equals(item.score, "0.0")) ? View.INVISIBLE : View.VISIBLE);
         ImageView imageView = helper.getHolder().getView(R.id.item_poster_iv);
-        Glide.with(mContext).load(item.img).into(imageView);
+        Glide.with(mContext).load(item.img).placeholder(R.drawable.icon_img_default).into(imageView);
     }
 }

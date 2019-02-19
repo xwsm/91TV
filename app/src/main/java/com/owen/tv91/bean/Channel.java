@@ -11,6 +11,10 @@ public class Channel implements Parcelable {
     public String channel;
     public List<Type> types;
 
+    public boolean hasTypes() {
+        return null != types && !types.isEmpty();
+    }
+
     public long getId() {
         return id;
     }

@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         mTabLayout.setupWithViewPager(mViewPager);
-        mViewPager.setScrollerDuration(400);
+        mViewPager.setScrollerDuration(200);
 
         mSearchBtn.setOnClickListener(new View.OnClickListener() {
             @Override

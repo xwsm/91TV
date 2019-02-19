@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,9 +20,11 @@ import com.owen.tv91.bean.MoviesResult;
 import com.owen.tv91.network.NetWorkManager;
 import com.owen.tv91.network.response.ResponseTransformer;
 import com.owen.tv91.network.schedulers.SchedulerProvider;
+import com.owen.tv91.utils.DisplayUtils;
 import com.owen.tv91.utils.ToastUtils;
 import com.owen.tvrecyclerview.widget.SimpleOnItemListener;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
+import com.owen.tvrecyclerview.widget.V7GridLayoutManager;
 
 import java.util.List;
 
@@ -46,6 +49,8 @@ public class MovieListFragment extends Fragment {
         return fragment;
     }
 
+    @BindView(R.id.fragment_movie_list_menu_rv)
+    TvRecyclerView mMenuRecyclerView;
     @BindView(R.id.fragment_movie_list_rv)
     TvRecyclerView mRecyclerView;
     @BindView(R.id.fragment_movie_list_progress_bar)
@@ -77,6 +82,7 @@ public class MovieListFragment extends Fragment {
             mRecyclerView.setOnItemListener(new SimpleOnItemListener() {
                 @Override
                 public void onItemSelected(TvRecyclerView parent, View itemView, int position) {
+                    Log.i("zsq", "position = " + position);
                     mFocusBorder.onFocus(itemView, FocusBorder.OptionsFactory.get(1.1f, 1.1f));
                 }
 
@@ -93,6 +99,18 @@ public class MovieListFragment extends Fragment {
                     mFocusBorder.setVisible(hasFocus);
                 }
             });
+
+            mMenuRecyclerView.setOnItemListener(new SimpleOnItemListener() {
+                int curPosition = 0;
+
+                @Override
+                public void onItemSelected(TvRecyclerView parent, View itemView, int position) {
+                    if(curPosition != position) {
+                        curPosition = position;
+                        loadDatas(mChannel.types.get(position).type);
+                    }
+                }
+            });
         }
         return mRootView;
     }
@@ -100,28 +118,46 @@ public class MovieListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         if(null == mMovies && null != mChannel) {
-            mProgressBar.setVisibility(View.VISIBLE);
 
-            if(null != mDisposable && !mDisposable.isDisposed()) {
-                mDisposable.dispose();
+            if(mChannel.hasTypes()) {
+                mMenuRecyclerView.setAdapter(new MovieTypeMenuAdapter(getContext(), mChannel.types));
+            } else {
+                mMenuRecyclerView.setVisibility(View.GONE);
+                mRecyclerView.setPadding((int) DisplayUtils.dp2Px(60), mRecyclerView.getPaddingTop(), mRecyclerView.getPaddingRight(), mRecyclerView.getPaddingBottom());
+                if(null != mRecyclerView.getLayoutManager()) {
+                    ((V7GridLayoutManager) mRecyclerView.getLayoutManager()).setSpanCount(6);
+                }
             }
-            mDisposable = NetWorkManager.getRequest().moviesByChannel(mChannel.channel, 0, 30)
-                    .compose(SchedulerProvider.getInstance().applySchedulers())
-                    .compose(ResponseTransformer.handleResult())
-                    .subscribe(new Consumer<MoviesResult>() {
-                        @Override
-                        public void accept(MoviesResult moviesResult) throws Exception {
-                            mProgressBar.setVisibility(View.GONE);
-                            mMovies = moviesResult.content;
-                            mRecyclerView.setAdapter(new MovieListAdapter(getContext(), mMovies));
-                        }
-                    }, new Consumer<Throwable>() {
-                        @Override
-                        public void accept(Throwable throwable) throws Exception {
-                            ToastUtils.showShortToast("加载列表数据失败！");
-                        }
-                    });
+            loadDatas("");
         }
+    }
+
+    private void loadDatas(String type) {
+        if(TextUtils.equals("全部", type)) {
+            type = "";
+        }
+        mRecyclerView.setVisibility(View.INVISIBLE);
+        mProgressBar.setVisibility(View.VISIBLE);
+        if(null != mDisposable && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
+        }
+        mDisposable = NetWorkManager.getRequest().moviesByChannelAndType(mChannel.channel, type, 0, 50)
+                .compose(SchedulerProvider.getInstance().applySchedulers())
+                .compose(ResponseTransformer.handleResult())
+                .subscribe(new Consumer<MoviesResult>() {
+                    @Override
+                    public void accept(MoviesResult moviesResult) throws Exception {
+                        mProgressBar.setVisibility(View.GONE);
+                        mRecyclerView.setVisibility(View.VISIBLE);
+                        mMovies = moviesResult.content;
+                        mRecyclerView.setAdapter(new MovieListAdapter(getContext(), mMovies), true);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        ToastUtils.showShortToast("加载列表数据失败！");
+                    }
+                });
     }
 
     @Override
