@@ -141,7 +141,7 @@ public class DetailActivity extends AppCompatActivity {
                                 data.add(bean);
                             }
                             PlayerSettings.getInstance(getApplicationContext())
-                                    .setPlayerType(PlayerSettings.PLAYER_TYPE_ANDROID)
+                                    .setPlayerType(PlayerSettings.PLAYER_TYPE_IJK)
                                     .setMediaList(data)
                                     .setPlayIndex(position)
                                     .startPlayer(DetailActivity.this);

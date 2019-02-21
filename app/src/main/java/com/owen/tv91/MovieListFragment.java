@@ -7,13 +7,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.owen.focus.FocusBorder;
+import com.owen.tv91.adapter.MovieListAdapter;
+import com.owen.tv91.adapter.MovieTypeMenuAdapter;
 import com.owen.tv91.bean.Channel;
 import com.owen.tv91.bean.Movie;
 import com.owen.tv91.bean.MoviesResult;
@@ -21,11 +22,13 @@ import com.owen.tv91.network.NetWorkManager;
 import com.owen.tv91.network.response.ResponseTransformer;
 import com.owen.tv91.network.schedulers.SchedulerProvider;
 import com.owen.tv91.utils.DisplayUtils;
+import com.owen.tv91.utils.FocusBroderHelper;
 import com.owen.tv91.utils.ToastUtils;
 import com.owen.tvrecyclerview.widget.SimpleOnItemListener;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
 import com.owen.tvrecyclerview.widget.V7GridLayoutManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -61,7 +64,11 @@ public class MovieListFragment extends Fragment {
     private Unbinder mUnbinder;
     private Disposable mDisposable;
     private Channel mChannel;
-    private List<Movie> mMovies;
+    private MovieListAdapter mMovieListAdapter;
+    private List<Movie> mMovies = new ArrayList<>();
+    private int mPageIndex = 0;
+    private int mPageSize = 50;
+    private int mCurTypePosition = 0;
 
     @Override
     public void onAttach(Context context) {
@@ -77,12 +84,12 @@ public class MovieListFragment extends Fragment {
         if(null == mRootView) {
             mRootView = inflater.inflate(R.layout.fragment_movie_list, container, false);
             mUnbinder = ButterKnife.bind(this, mRootView);
-            mFocusBorder = FocusBroderHelper.create((ViewGroup) mRootView);
+            mFocusBorder = FocusBroderHelper.create(mRootView.findViewById(R.id.fragment_list_content_layout));
 
+            mRecyclerView.setLoadMoreBeforehandCount(10);
             mRecyclerView.setOnItemListener(new SimpleOnItemListener() {
                 @Override
                 public void onItemSelected(TvRecyclerView parent, View itemView, int position) {
-                    Log.i("zsq", "position = " + position);
                     mFocusBorder.onFocus(itemView, FocusBorder.OptionsFactory.get(1.1f, 1.1f));
                 }
 
@@ -99,15 +106,24 @@ public class MovieListFragment extends Fragment {
                     mFocusBorder.setVisible(hasFocus);
                 }
             });
+            mRecyclerView.setOnLoadMoreListener(new TvRecyclerView.OnLoadMoreListener() {
+                @Override
+                public boolean onLoadMore() {
+                    mRecyclerView.setLoadingMore(true);
+                    mPageIndex ++;
+                    loadDatas();
+                    return false;
+                }
+            });
 
             mMenuRecyclerView.setOnItemListener(new SimpleOnItemListener() {
-                int curPosition = 0;
 
                 @Override
                 public void onItemSelected(TvRecyclerView parent, View itemView, int position) {
-                    if(curPosition != position) {
-                        curPosition = position;
-                        loadDatas(mChannel.types.get(position).type);
+                    if(mCurTypePosition != position) {
+                        mCurTypePosition = position;
+                        mPageIndex = 0;
+                        loadDatas();
                     }
                 }
             });
@@ -117,8 +133,7 @@ public class MovieListFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
-        if(null == mMovies && null != mChannel) {
-
+        if(mMovies.isEmpty() && null != mChannel) {
             if(mChannel.hasTypes()) {
                 mMenuRecyclerView.setAdapter(new MovieTypeMenuAdapter(getContext(), mChannel.types));
             } else {
@@ -128,29 +143,47 @@ public class MovieListFragment extends Fragment {
                     ((V7GridLayoutManager) mRecyclerView.getLayoutManager()).setSpanCount(6);
                 }
             }
-            loadDatas("");
+            loadDatas();
         }
     }
 
-    private void loadDatas(String type) {
-        if(TextUtils.equals("全部", type)) {
-            type = "";
+    private String getCurType() {
+        if(null != mChannel && mChannel.hasTypes()) {
+            String type = mChannel.types.get(mCurTypePosition).type;
+            if(TextUtils.equals("全部", type)) {
+                return  "";
+            }
+            return type;
         }
-        mRecyclerView.setVisibility(View.INVISIBLE);
-        mProgressBar.setVisibility(View.VISIBLE);
+        return "";
+    }
+
+    private void loadDatas() {
+        if (mPageIndex == 0) {
+            mRecyclerView.setVisibility(View.INVISIBLE);
+            mProgressBar.setVisibility(View.VISIBLE);
+            mMovies.clear();
+        }
         if(null != mDisposable && !mDisposable.isDisposed()) {
             mDisposable.dispose();
         }
-        mDisposable = NetWorkManager.getRequest().moviesByChannelAndType(mChannel.channel, type, 0, 50)
+        mDisposable = NetWorkManager.getRequest().moviesByChannelAndType(mChannel.channel, getCurType(), mPageIndex, mPageSize)
                 .compose(SchedulerProvider.getInstance().applySchedulers())
                 .compose(ResponseTransformer.handleResult())
                 .subscribe(new Consumer<MoviesResult>() {
                     @Override
                     public void accept(MoviesResult moviesResult) throws Exception {
-                        mProgressBar.setVisibility(View.GONE);
-                        mRecyclerView.setVisibility(View.VISIBLE);
-                        mMovies = moviesResult.content;
-                        mRecyclerView.setAdapter(new MovieListAdapter(getContext(), mMovies), true);
+                        int posStart = mMovies.size();
+                        mMovies.addAll(moviesResult.content);
+                        if(mPageIndex == 0) {
+                            mProgressBar.setVisibility(View.GONE);
+                            mRecyclerView.setVisibility(View.VISIBLE);
+                            mMovieListAdapter = new MovieListAdapter(getContext(), mMovies);
+                            mRecyclerView.setAdapter(mMovieListAdapter, true);
+                        }
+                        mMovieListAdapter.notifyItemRangeInserted(posStart, moviesResult.content.size());
+                        mRecyclerView.setLoadingMore(false);
+                        mRecyclerView.setHasMoreData(!moviesResult.isLast());
                     }
                 }, new Consumer<Throwable>() {
                     @Override

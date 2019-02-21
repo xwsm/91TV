@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -20,30 +20,34 @@
         app:tv_selectedItemIsCentered="true"
         app:tv_layoutManager="V7LinearLayoutManager"/>
 
-    <com.owen.tvrecyclerview.widget.TvRecyclerView
-        android:id="@+id/fragment_movie_list_rv"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:paddingLeft="20dp"
-        android:paddingRight="60dp"
-        android:paddingTop="20dp"
-        android:paddingBottom="20dp"
-        android:orientation="vertical"
-        android:nextFocusLeft="@id/fragment_movie_list_menu_rv"
-        app:layout_constraintLeft_toRightOf="@id/fragment_movie_list_menu_rv"
-        app:layout_constraintRight_toRightOf="parent"
-        app:tv_verticalSpacingWithMargins="16dp"
-        app:tv_horizontalSpacingWithMargins="16dp"
-        app:spanCount="5"
-        app:tv_layoutManager="V7GridLayoutManager"/>
+    <FrameLayout
+        android:id="@+id/fragment_list_content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <ProgressBar
-        android:id="@+id/fragment_movie_list_progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@id/fragment_movie_list_rv"
-        app:layout_constraintBottom_toBottomOf="@id/fragment_movie_list_rv"
-        app:layout_constraintLeft_toLeftOf="@id/fragment_movie_list_rv"
-        app:layout_constraintRight_toRightOf="@id/fragment_movie_list_rv"/>
+        <com.owen.tvrecyclerview.widget.TvRecyclerView
+            android:id="@+id/fragment_movie_list_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="20dp"
+            android:paddingRight="60dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"
+            android:orientation="vertical"
+            android:nextFocusLeft="@id/fragment_movie_list_menu_rv"
+            app:tv_selectedItemOffsetStart="12dp"
+            app:tv_selectedItemOffsetEnd="12dp"
+            app:tv_verticalSpacingWithMargins="16dp"
+            app:tv_horizontalSpacingWithMargins="16dp"
+            app:spanCount="5"
+            app:tv_layoutManager="V7GridLayoutManager"/>
 
-</android.support.constraint.ConstraintLayout>
+        <ProgressBar
+            android:id="@+id/fragment_movie_list_progress_bar"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </FrameLayout>
+
+</LinearLayout>

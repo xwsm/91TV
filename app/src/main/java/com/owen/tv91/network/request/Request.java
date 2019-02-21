@@ -4,6 +4,7 @@ import com.owen.tv91.bean.Channel;
 import com.owen.tv91.bean.Movie;
 import com.owen.tv91.bean.MovieDetail;
 import com.owen.tv91.bean.MoviesResult;
+import com.owen.tv91.bean.SearchWithChannel;
 import com.owen.tv91.network.response.Response;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public interface Request {
     @POST("search.api")
     Observable<Response<List<Movie>>> search(@Query("key") String key);
 
-
+    @POST("searchWithChannel.api")
+    Observable<Response<List<SearchWithChannel>>> searchWithChannel(@Query("key") String key);
 
 }

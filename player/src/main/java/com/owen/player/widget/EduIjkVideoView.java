@@ -160,7 +160,7 @@ public class EduIjkVideoView extends IjkVideoView implements EduIVideoView {
             @Override
             public void loadLibrary(String libName) {
                 try {
-                    System.loadLibrary("lexue"+libName);
+                    System.loadLibrary(libName);
                 } catch (UnsatisfiedLinkError e) {
                     e.printStackTrace();
                 } catch (SecurityException e) {
@@ -168,7 +168,7 @@ public class EduIjkVideoView extends IjkVideoView implements EduIVideoView {
                 }
             }
         });
-        IjkMediaPlayer.native_profileBegin("liblexueijkplayer.so");
+        IjkMediaPlayer.native_profileBegin("ijkplayer.so");
     }
 
     @Override
