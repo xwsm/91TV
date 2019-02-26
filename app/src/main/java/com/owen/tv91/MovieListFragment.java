@@ -126,6 +126,12 @@ public class MovieListFragment extends Fragment {
                         loadDatas();
                     }
                 }
+
+                @Override
+                public void onItemClick(TvRecyclerView parent, View itemView, int position) {
+                    mMenuRecyclerView.setItemActivated(position);
+                    onItemSelected(parent, itemView, position);
+                }
             });
         }
         return mRootView;

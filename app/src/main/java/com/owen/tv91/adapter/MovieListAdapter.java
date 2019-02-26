@@ -10,6 +10,7 @@ import com.owen.adapter.CommonRecyclerViewAdapter;
 import com.owen.adapter.CommonRecyclerViewHolder;
 import com.owen.tv91.R;
 import com.owen.tv91.bean.Movie;
+import com.owen.tv91.utils.GlideApp;
 
 import java.util.List;
 
@@ -36,6 +37,6 @@ public class MovieListAdapter extends CommonRecyclerViewAdapter<Movie> {
                 .setText(R.id.item_score_tv, item.score)
                 .setVisibility(R.id.item_score_tv, (TextUtils.isEmpty(item.score) || TextUtils.equals(item.score, "0.0")) ? View.INVISIBLE : View.VISIBLE);
         ImageView imageView = helper.getHolder().getView(R.id.item_poster_iv);
-        Glide.with(mContext).load(item.img).placeholder(R.drawable.icon_img_default).into(imageView);
+        GlideApp.with(mContext).load(item.img).placeholder(R.drawable.icon_img_default).into(imageView);
     }
 }

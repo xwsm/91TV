@@ -2,6 +2,8 @@ package com.owen.tv91.network;
 
 import com.owen.tv91.network.request.Request;
 
+import java.util.concurrent.TimeUnit;
+
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -35,6 +37,9 @@ public class NetWorkManager {
     static  {
         // 初始化okhttp
         OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(35, TimeUnit.SECONDS)
+                .readTimeout(35, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(true)
                 .build();
 
         // 初始化Retrofit

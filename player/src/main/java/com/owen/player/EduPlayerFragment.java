@@ -16,6 +16,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.owen.player.bean.MediaBean;
 import com.owen.player.bean.ParamBean;
@@ -42,6 +43,8 @@ public class EduPlayerFragment extends Fragment implements EduIVideoView.OnEduMe
     private static final int MSG_UPLOAD_PLAY = 1;
 
     private EduIVideoView mVideoView;
+
+    private ImageView mPlayerBg;
 
     private ViewGroup mLoadingView;
 
@@ -223,6 +226,7 @@ public class EduPlayerFragment extends Fragment implements EduIVideoView.OnEduMe
 
     private void initView(View root) {
         mLoadingView = (ViewGroup) root.findViewById(R.id.edu_tvplayer_loading);
+        mPlayerBg = root.findViewById(R.id.edu_tvplayer_bg);
         mMediaController = (EduIMediaController) root.findViewById(R.id.edu_tvplayer_controller);
         mMediaController.setWindow(getActivity().getWindow());
         mMediaController.setPlayList(mPlayerSettings.getMediaList());
@@ -407,6 +411,7 @@ public class EduPlayerFragment extends Fragment implements EduIVideoView.OnEduMe
         EPLog.d(TAG, "onPrepared...");
         mHandler.sendEmptyMessage(MSG_UPLOAD_PLAY);
         mLoadingView.setVisibility(View.GONE);
+        mPlayerBg.setVisibility(View.GONE);
         if (null != mNoPermissionDialog) mNoPermissionDialog.dismiss();
         if (null != mErrorDialog) mErrorDialog.dismiss();
         if (null != mMediaController) mMediaController.hide();

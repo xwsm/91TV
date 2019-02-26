@@ -1,6 +1,7 @@
 package com.owen.tv91.network.Exception;
 
 import android.net.ParseException;
+import android.util.Log;
 
 import com.google.gson.JsonParseException;
 
@@ -39,6 +40,8 @@ public class CustomException {
     public static final int HTTP_ERROR = 1003;
 
     public static ApiException handleException(Throwable e) {
+        Log.e("zsq", e.getMessage());
+        e.printStackTrace();
         ApiException ex;
         if (e instanceof JsonParseException
                 || e instanceof JSONException

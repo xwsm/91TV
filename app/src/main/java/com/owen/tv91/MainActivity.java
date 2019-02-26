@@ -83,6 +83,8 @@ public class MainActivity extends AppCompatActivity {
                         ToastUtils.showShortToast("加载导航失败！");
                     }
                 });
+
+        mTabLayout.requestFocus();
     }
 
     class PagerAdapter extends FragmentPagerAdapter {

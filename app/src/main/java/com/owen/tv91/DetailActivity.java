@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -22,6 +23,7 @@ import com.owen.tv91.bean.PlayUrl;
 import com.owen.tv91.network.NetWorkManager;
 import com.owen.tv91.network.response.ResponseTransformer;
 import com.owen.tv91.network.schedulers.SchedulerProvider;
+import com.owen.tv91.utils.GlideApp;
 import com.owen.tv91.utils.ToastUtils;
 import com.owen.tvrecyclerview.widget.SimpleOnItemListener;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
@@ -69,7 +71,8 @@ public class DetailActivity extends AppCompatActivity {
     public TextView mUpdateDateTv; //更新日期，2018-12-21
     @BindView(R.id.activity_detail_intro_tv)
     public TextView mIntroTv; //简介
-
+    @BindView(R.id.activity_detail_progress_bar)
+    public ProgressBar mProgressBar;
     @BindViews({R.id.activity_detail_play_list_title1_tv, R.id.activity_detail_play_list_title2_tv, R.id.activity_detail_play_list_title3_tv})
     TextView[] mPlayTitleTvs;
     @BindViews({R.id.activity_detail_play_list1_rv, R.id.activity_detail_play_list2_rv, R.id.activity_detail_play_list3_rv})
@@ -85,19 +88,20 @@ public class DetailActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         long id = getIntent().getLongExtra("id", 0);
 
-
         mDisposable = NetWorkManager.getRequest().detail(id)
                 .compose(SchedulerProvider.getInstance().applySchedulers())
                 .compose(ResponseTransformer.handleResult())
                 .subscribe(new Consumer<MovieDetail>() {
                     @Override
                     public void accept(MovieDetail movieDetail) throws Exception {
+                        mProgressBar.setVisibility(View.GONE);
                         mMovieDetail = movieDetail;
                         setData();
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
+                        mProgressBar.setVisibility(View.GONE);
                         ToastUtils.showShortToast("获取影片详情数据失败！");
                     }
                 });
@@ -106,7 +110,7 @@ public class DetailActivity extends AppCompatActivity {
 
     private void setData() {
         if(null != mMovieDetail) {
-            Glide.with(this).load(mMovieDetail.img).into(mPosterIv);
+            GlideApp.with(this).load(mMovieDetail.img).placeholder(R.drawable.icon_img_default).into(mPosterIv);
             mNameTv.setText(mMovieDetail.name);
             mSketchTv.setText(mMovieDetail.sketch);
             mAliasTv.setText("别名：" + mMovieDetail.alias);
@@ -136,7 +140,7 @@ public class DetailActivity extends AppCompatActivity {
                                 bean = new MediaBean();
                                 bean.id = mMovieDetail.id + "";
                                 bean.name = mMovieDetail.name;
-                                bean.playUrl = playUrl.playUrl;
+                                bean.playUrl = playUrl.playUrl.replace("http:", "https:");
                                 bean.playName = playUrl.name;
                                 data.add(bean);
                             }

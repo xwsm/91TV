@@ -9,13 +9,13 @@
 
     <Button
         android:id="@+id/search_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginLeft="40dp"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="60dp"
+        app:layout_constraintTop_toTopOf="@id/tablayout1"
+        app:layout_constraintBottom_toBottomOf="@id/tablayout1"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:text="搜索"/>
+        android:background="@drawable/selector_search_btn"/>
 
     <com.owen.tab.TvTabLayout
         android:id="@+id/tablayout1"

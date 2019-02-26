@@ -35,9 +35,9 @@
             android:paddingBottom="20dp"
             android:orientation="vertical"
             android:nextFocusLeft="@id/fragment_movie_list_menu_rv"
-            app:tv_selectedItemOffsetStart="12dp"
-            app:tv_selectedItemOffsetEnd="12dp"
-            app:tv_verticalSpacingWithMargins="16dp"
+            app:tv_selectedItemOffsetStart="9dp"
+            app:tv_selectedItemOffsetEnd="9dp"
+            app:tv_verticalSpacingWithMargins="14dp"
             app:tv_horizontalSpacingWithMargins="16dp"
             app:spanCount="5"
             app:tv_layoutManager="V7GridLayoutManager"/>
