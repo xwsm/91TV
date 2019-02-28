@@ -21,7 +21,7 @@ public class App extends Application {
         ToastUtils.initToast(this);
 
         // 初始化SDK
-        UMConfigure.init(this, "5c77a8b00cafb212e3000383", "github", UMConfigure.DEVICE_TYPE_PHONE, null);
+        UMConfigure.init(this, "5c77a8b00cafb212e3000383", "github", UMConfigure.DEVICE_TYPE_BOX, null);
         // 选用AUTO页面采集模式
         MobclickAgent.setPageCollectionMode(MobclickAgent.PageMode.AUTO);
     }
