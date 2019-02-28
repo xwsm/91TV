@@ -9,14 +9,19 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.owen.tab.TvTabLayout;
+import com.owen.tv91.adapter.MainPagerAdapter;
+import com.owen.tv91.bean.AppUpdate;
 import com.owen.tv91.bean.Channel;
 import com.owen.tv91.network.NetWorkManager;
 import com.owen.tv91.network.response.ResponseTransformer;
 import com.owen.tv91.network.schedulers.SchedulerProvider;
 import com.owen.tv91.utils.ToastUtils;
+import com.owen.tv91.widget.UpdateDialog;
 import com.owen.widget.TvViewPager;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.List;
 
@@ -32,16 +37,25 @@ public class MainActivity extends AppCompatActivity {
     TvTabLayout mTabLayout;
     @BindView(R.id.activity_main_view_pager)
     TvViewPager mViewPager;
+    @BindView(R.id.activity_main_progress_bar)
+    ProgressBar mProgressBar;
 
     private Disposable mDisposable;
+    private Disposable mDisposable1;
+    private UpdateDialog mUpdateDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         ButterKnife.bind(this);
 
+        initView();
+        loadChannelDatas();
+        checkUpdate();
+    }
+
+    private void initView() {
         mTabLayout.setupWithViewPager(mViewPager);
         mViewPager.setScrollerDuration(200);
 
@@ -51,31 +65,25 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, SearchActivity.class));
             }
         });
-
-        mTabLayout.addOnTabSelectedListener(new TvTabLayout.OnTabSelectedListener() {
+        mSearchBtn.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onTabSelected(final TvTabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabUnselected(TvTabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TvTabLayout.Tab tab) {
-
+            public void onFocusChange(View v, boolean hasFocus) {
+                v.animate().scaleX(hasFocus ? 1.1f : 1f).scaleY(hasFocus ? 1.1f : 1f).setDuration(300).start();
             }
         });
 
+        mTabLayout.requestFocus();
+    }
+
+    private void loadChannelDatas() {
         mDisposable = NetWorkManager.getRequest().channels()
                 .compose(SchedulerProvider.getInstance().applySchedulers())
                 .compose(ResponseTransformer.handleResult())
                 .subscribe(new Consumer<List<Channel>>() {
                     @Override
                     public void accept(List<Channel> channels) throws Exception {
-                        mViewPager.setAdapter(new PagerAdapter(getSupportFragmentManager(), channels));
+                        mProgressBar.setVisibility(View.GONE);
+                        mViewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager(), channels));
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -83,32 +91,40 @@ public class MainActivity extends AppCompatActivity {
                         ToastUtils.showShortToast("加载导航失败！");
                     }
                 });
-
-        mTabLayout.requestFocus();
     }
 
-    class PagerAdapter extends FragmentPagerAdapter {
-        private List<Channel> mNavs;
+    private void checkUpdate() {
+        mDisposable1 = NetWorkManager.getRequest().update()
+                .compose(SchedulerProvider.getInstance().applySchedulers())
+                .compose(ResponseTransformer.handleResult())
+                .subscribe(new Consumer<AppUpdate>() {
+                    @Override
+                    public void accept(AppUpdate appUpdate) throws Exception {
+                        if(appUpdate.versionCode > BuildConfig.VERSION_CODE) {
+                            mUpdateDialog = new UpdateDialog(MainActivity.this, appUpdate);
+                            mUpdateDialog.show();
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        ToastUtils.showShortToast("检查版本更新失败！");
+                    }
+                });
+    }
 
-        public PagerAdapter(FragmentManager fm, List<Channel> navs) {
-            super(fm);
-            mNavs = navs;
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(null != mDisposable) {
+            mDisposable.dispose();
         }
-
-        @Nullable
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mNavs.get(position).channel;
+        if(null != mDisposable1) {
+            mDisposable1.dispose();
         }
-
-        @Override
-        public Fragment getItem(int i) {
-            return MovieListFragment.newInstance(mNavs.get(i));
-        }
-
-        @Override
-        public int getCount() {
-            return null != mNavs ? mNavs.size() : 0;
+        if(null != mUpdateDialog && mUpdateDialog.isShowing()) {
+            mUpdateDialog.cancel();
         }
     }
+
 }

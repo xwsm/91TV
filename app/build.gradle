@@ -14,14 +14,17 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "com.owen.tv91"
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "0.0.2"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.config
+            ndk {
+                abiFilters "armeabi-v7a", "arm64-v8a"
+            }
         }
         debug {
             signingConfig signingConfigs.config
@@ -40,18 +43,28 @@ dependencies {
     implementation "com.android.support:animated-vector-drawable:$supportVersion"
     implementation "com.android.support:support-media-compat:$supportVersion"
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-    implementation 'me.jessyan:autosize:1.1.0'
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.5'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
-    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
-    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+
+    implementation 'me.jessyan:autosize:1.1.2'
+
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.7'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.5.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
     //非必要依赖， log依赖，如果需要打印OkHttpLog需要添加
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.8.1'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.13.1'
+
+    //下载核心库（https://www.jianshu.com/p/77b48f0f647d）
+    implementation 'eason.linyuzai:eason-download:1.0.1'
+    //下载如有需要可以添加额外的监听器
+    implementation 'eason.linyuzai:eason-download-listeners:1.0.1'
+
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
     implementation 'com.owen:tv-recyclerview:2.0.3'
     implementation 'com.owen:tv-focusborder:1.0.8'
     implementation 'com.owen:tv-gridlayout:1.0.0'
@@ -59,4 +72,7 @@ dependencies {
     implementation 'com.owen:tv-widget:1.0.1'
     //    implementation 'com.huan.edu.tvplayer:PlayerLibrary:2.6.0'
     implementation project(':player')
+
+    implementation  'com.umeng.umsdk:analytics:8.0.0'
+    implementation  'com.umeng.umsdk:common:2.0.0'
 }

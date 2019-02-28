@@ -1,18 +1,14 @@
 package com.owen.tv91;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.owen.adapter.CommonRecyclerViewAdapter;
 import com.owen.adapter.CommonRecyclerViewHolder;
 import com.owen.player.PlayerSettings;
@@ -27,6 +23,7 @@ import com.owen.tv91.utils.GlideApp;
 import com.owen.tv91.utils.ToastUtils;
 import com.owen.tvrecyclerview.widget.SimpleOnItemListener;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;

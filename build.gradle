@@ -5,6 +5,7 @@ buildscript {
     repositories {
         google()
         jcenter()
+        maven { url 'https://dl.bintray.com/umsdk/release' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.1'
@@ -24,6 +25,7 @@ allprojects {
             url 'https://maven.google.com/'
             name 'Google'
         }
+        maven { url 'https://dl.bintray.com/umsdk/release' }
     }
 }
 
@@ -33,7 +35,7 @@ task clean(type: Delete) {
 
 ext {
     compileSdkVersion = 28
-    minSdkVersion = 16
+    minSdkVersion = 18
     targetSdkVersion = 25
     supportVersion = "28.0.0"
 }

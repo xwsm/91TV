@@ -23,6 +23,7 @@ import com.owen.tv91.utils.ToastUtils;
 import com.owen.tvgridlayout.TvGridLayout;
 import com.owen.tvrecyclerview.widget.SimpleOnItemListener;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +63,10 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
         ButterKnife.bind(this);
 
+        initView();
+    }
+
+    private void initView() {
         mFocusBorder = FocusBroderHelper.create(this);
 
         mChannelRecyclerView.setOnItemListener(new SimpleOnItemListener() {

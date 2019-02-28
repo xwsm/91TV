@@ -1,5 +1,6 @@
 package com.owen.tv91.network.request;
 
+import com.owen.tv91.bean.AppUpdate;
 import com.owen.tv91.bean.Channel;
 import com.owen.tv91.bean.Movie;
 import com.owen.tv91.bean.MovieDetail;
@@ -39,5 +40,8 @@ public interface Request {
 
     @POST("searchWithChannel.api")
     Observable<Response<List<SearchWithChannel>>> searchWithChannel(@Query("key") String key);
+
+    @POST("appUpdate.api")
+    Observable<Response<AppUpdate>> update();
 
 }

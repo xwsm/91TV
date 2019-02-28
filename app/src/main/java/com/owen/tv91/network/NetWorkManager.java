@@ -51,6 +51,10 @@ public class NetWorkManager {
                 .build();
     }
 
+    public static Retrofit getRetrofit() {
+        return retrofit;
+    }
+
     public static Request getRequest() {
         if (request == null) {
             synchronized (Request.class) {

@@ -27,6 +27,7 @@ import com.owen.tv91.utils.ToastUtils;
 import com.owen.tvrecyclerview.widget.SimpleOnItemListener;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
 import com.owen.tvrecyclerview.widget.V7GridLayoutManager;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,6 +77,18 @@ public class MovieListFragment extends Fragment {
         if(getArguments() != null) {
             mChannel = getArguments().getParcelable("channel");
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(mChannel.channel);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(mChannel.channel);
     }
 
     @Nullable
