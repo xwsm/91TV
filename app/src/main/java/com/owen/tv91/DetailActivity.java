@@ -4,7 +4,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -13,6 +15,7 @@ import com.owen.adapter.CommonRecyclerViewAdapter;
 import com.owen.adapter.CommonRecyclerViewHolder;
 import com.owen.player.PlayerSettings;
 import com.owen.player.bean.MediaBean;
+import com.owen.tab.TvTabLayout;
 import com.owen.tv91.bean.MovieDetail;
 import com.owen.tv91.bean.PlaySource;
 import com.owen.tv91.bean.PlayUrl;
@@ -23,13 +26,12 @@ import com.owen.tv91.utils.GlideApp;
 import com.owen.tv91.utils.ToastUtils;
 import com.owen.tvrecyclerview.widget.SimpleOnItemListener;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
-import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.BindViews;
 import butterknife.ButterKnife;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -47,6 +49,7 @@ public class DetailActivity extends AppCompatActivity {
     public TextView mNameTv; //姓名，无双
     @BindView(R.id.activity_detail_sketch_tv)
     public TextView mSketchTv; //简述，HD1280高清国语中字版/更新至20190114
+    @BindView(R.id.activity_detail_score_tv)
     public TextView mScoreTv; //评分，7.9
     @BindView(R.id.activity_detail_alias_tv)
     public TextView mAliasTv; //英文名/别名，Project Gutenberg,Mo seung
@@ -70,10 +73,12 @@ public class DetailActivity extends AppCompatActivity {
     public TextView mIntroTv; //简介
     @BindView(R.id.activity_detail_progress_bar)
     public ProgressBar mProgressBar;
-    @BindViews({R.id.activity_detail_play_list_title1_tv, R.id.activity_detail_play_list_title2_tv, R.id.activity_detail_play_list_title3_tv})
-    TextView[] mPlayTitleTvs;
-    @BindViews({R.id.activity_detail_play_list1_rv, R.id.activity_detail_play_list2_rv, R.id.activity_detail_play_list3_rv})
-    TvRecyclerView[] mPlayListRvs;
+    @BindView(R.id.activity_detail_play_source_tablayout)
+    TvTabLayout mTabLayout;
+    @BindView(R.id.activity_detail_play_list1_rv)
+    TvRecyclerView mPlayListRv;
+    @BindView(R.id.activity_detail_play_btn)
+    Button mPlayButton;
     
     private MovieDetail mMovieDetail;
     private Disposable mDisposable;
@@ -84,6 +89,7 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
         long id = getIntent().getLongExtra("id", 0);
+
 
         mDisposable = NetWorkManager.getRequest().detail(id)
                 .compose(SchedulerProvider.getInstance().applySchedulers())
@@ -103,11 +109,24 @@ public class DetailActivity extends AppCompatActivity {
                     }
                 });
 
+        mPlayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(null != mMovieDetail && mMovieDetail.hasPlaySources()) {
+                    playMovie(mMovieDetail.playSources.get(0), 0);
+                } else {
+                    ToastUtils.showShortToast("播放地址出错！");
+                }
+            }
+        });
     }
 
     private void setData() {
         if(null != mMovieDetail) {
             GlideApp.with(this).load(mMovieDetail.img).placeholder(R.drawable.icon_img_default).into(mPosterIv);
+            mScoreTv.setVisibility(TextUtils.isEmpty(mMovieDetail.score) || TextUtils.equals(mMovieDetail.score, "0.0")
+                            ? View.INVISIBLE : View.VISIBLE);
+            mScoreTv.setText(mMovieDetail.score);
             mNameTv.setText(mMovieDetail.name);
             mSketchTv.setText(mMovieDetail.sketch);
             mAliasTv.setText("别名：" + mMovieDetail.alias);
@@ -122,43 +141,81 @@ public class DetailActivity extends AppCompatActivity {
             mIntroTv.setText("剧情简介：" + mMovieDetail.intro);
 
             if(mMovieDetail.hasPlaySources()) {
-                int size = mMovieDetail.playSources.size() > mPlayTitleTvs.length ? mPlayTitleTvs.length : mMovieDetail.playSources.size();
-                for(int i=0; i<size; i++) {
-                    final PlaySource playSource = mMovieDetail.playSources.get(i);
-                    mPlayTitleTvs[i].setText("来源：" + playSource.name);
-                    mPlayListRvs[i].setAdapter(new PlayUrlAdapter(this, playSource.playUrls));
+                mTabLayout.addOnTabSelectedListener(new TvTabLayout.OnTabSelectedListener() {
+                    @Override
+                    public void onTabSelected(TvTabLayout.Tab tab) {
+                        final PlaySource playSource = mMovieDetail.playSources.get(tab.getPosition());
 
-                    mPlayListRvs[i].setOnItemListener(new SimpleOnItemListener() {
-                        @Override
-                        public void onItemClick(TvRecyclerView parent, View itemView, int position) {
-                            List<MediaBean> data = new ArrayList<>();
-                            MediaBean bean;
-                            for(PlayUrl playUrl : playSource.playUrls) {
-                                bean = new MediaBean();
-                                bean.id = mMovieDetail.id + "";
-                                bean.name = mMovieDetail.name;
-                                bean.playUrl = playUrl.playUrl.replace("http:", "https:");
-                                bean.playName = playUrl.name;
-                                data.add(bean);
+                        mPlayListRv.setAdapter(new PlayUrlAdapter(DetailActivity.this, playSource.playUrls), true);
+
+                        mPlayListRv.setOnItemListener(new SimpleOnItemListener() {
+                            @Override
+                            public void onItemSelected(TvRecyclerView parent, View itemView, int position) {
+                                itemView.animate().scaleX(1.1f).scaleY(1.1f).setDuration(300).start();
                             }
-                            PlayerSettings.getInstance(getApplicationContext())
-                                    .setPlayerType(PlayerSettings.PLAYER_TYPE_IJK)
-                                    .setMediaList(data)
-                                    .setPlayIndex(position)
-                                    .startPlayer(DetailActivity.this);
-                        }
-                    });
+
+                            @Override
+                            public void onItemPreSelected(TvRecyclerView parent, View itemView, int position) {
+                                itemView.animate().scaleX(1f).scaleY(1f).setDuration(300).start();
+                            }
+
+                            @Override
+                            public void onItemClick(TvRecyclerView parent, View itemView, int position) {
+                                playMovie(playSource, position);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onTabUnselected(TvTabLayout.Tab tab) {
+
+                    }
+
+                    @Override
+                    public void onTabReselected(TvTabLayout.Tab tab) {
+
+                    }
+                });
+
+                int i = 0;
+                Iterator<PlaySource> iterator = mMovieDetail.playSources.iterator();
+                while (iterator.hasNext()) {
+                    PlaySource playSource = iterator.next();
+                    if(playSource.hasPlayUrls()) {
+                        mTabLayout.addTab(mTabLayout.newTab().setText(playSource.name), i == 0);
+                        i++;
+                    } else {
+                        iterator.remove();
+                    }
                 }
 
                 // 初始化焦点
-                mPlayListRvs[0].post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mPlayListRvs[0].requestDefaultFocus();
-                    }
-                });
+//                mPlayListRv.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        mPlayListRv.requestDefaultFocus();
+//                    }
+//                }, 200);
             }
         }
+    }
+
+    private void playMovie(PlaySource playSource, int position) {
+        List<MediaBean> data = new ArrayList<>();
+        MediaBean bean;
+        for (PlayUrl playUrl : playSource.playUrls) {
+            bean = new MediaBean();
+            bean.id = mMovieDetail.id + "";
+            bean.name = mMovieDetail.name;
+            bean.playUrl = playUrl.playUrl.replace("http:", "https:");
+            bean.playName = playUrl.name;
+            data.add(bean);
+        }
+        PlayerSettings.getInstance(getApplicationContext())
+                .setPlayerType(PlayerSettings.PLAYER_TYPE_IJK)
+                .setMediaList(data)
+                .setPlayIndex(position)
+                .startPlayer(DetailActivity.this);
     }
 
     @Override

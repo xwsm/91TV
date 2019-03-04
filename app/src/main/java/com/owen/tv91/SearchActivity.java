@@ -71,6 +71,12 @@ public class SearchActivity extends AppCompatActivity {
 
         mChannelRecyclerView.setOnItemListener(new SimpleOnItemListener() {
             @Override
+            public void onItemClick(TvRecyclerView parent, View itemView, int position) {
+                parent.setItemActivated(position);
+                onItemSelected(parent, itemView, position);
+            }
+
+            @Override
             public void onItemSelected(TvRecyclerView parent, View itemView, int position) {
                 if(mSelectedChannelPosition != position) {
                     onSelectedChannel(position);
@@ -79,6 +85,12 @@ public class SearchActivity extends AppCompatActivity {
         });
 
         mRecyclerView.setOnItemListener(new SimpleOnItemListener() {
+
+            @Override
+            public void onItemSelected(TvRecyclerView parent, View itemView, int position) {
+                mFocusBorder.onFocus(itemView, FocusBorder.OptionsFactory.get(1.1f, 1.1f));
+            }
+
             @Override
             public void onItemClick(TvRecyclerView parent, View itemView, int position) {
                 Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
@@ -86,16 +98,20 @@ public class SearchActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        mFocusBorder.boundGlobalFocusListener(new FocusBorder.OnFocusCallback() {
-            @Nullable
+        mRecyclerView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public FocusBorder.Options onFocus(View oldFocus, View newFocus) {
-                return FocusBorder.OptionsFactory.get(1.1f, 1.1f);
+            public void onFocusChange(View v, boolean hasFocus) {
+                mFocusBorder.setVisible(hasFocus, hasFocus);
             }
         });
 
         mTvGridLayout.setOnItemListener(new com.owen.tvgridlayout.SimpleOnItemListener() {
+
+            @Override
+            public void onItemSelected(TvGridLayout parent, View itemView, int position) {
+                mFocusBorder.onFocus(itemView, FocusBorder.OptionsFactory.get(1.1f, 1.1f));
+            }
+
             @Override
             public void onItemClick(TvGridLayout parent, View itemView, int position) {
                 if(position == 0) {
@@ -113,6 +129,12 @@ public class SearchActivity extends AppCompatActivity {
                 onSearch();
             }
         });
+        mTvGridLayout.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                mFocusBorder.setVisible(hasFocus, hasFocus);
+            }
+        });
     }
 
     private void onSelectedChannel(int position) {
@@ -122,14 +144,14 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void onSearch() {
+        mRecyclerView.setVisibility(View.GONE);
+        mChannelRecyclerView.setVisibility(View.GONE);
         final String word = mSearchEt.getText().toString();
         if(!TextUtils.isEmpty(word)) {
             if(null != mSearchDisposable && !mSearchDisposable.isDisposed()) {
                 mSearchDisposable.dispose();
             }
             mProgressBar.setVisibility(View.VISIBLE);
-            mRecyclerView.setVisibility(View.GONE);
-            mChannelRecyclerView.setVisibility(View.GONE);
             mSearchDisposable = NetWorkManager.getRequest().searchWithChannel(word)
                     .compose(SchedulerProvider.getInstance().applySchedulers())
                     .compose(ResponseTransformer.handleResult())

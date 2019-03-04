@@ -16,6 +16,7 @@
         <item name="android:layout_marginTop">10dp</item>
         <item name="android:textSize">22sp</item>
         <item name="android:textColor">@color/gray</item>
+        <item name="android:lines">1</item>
     </style>
 
     <style name="keyboard_item_text">

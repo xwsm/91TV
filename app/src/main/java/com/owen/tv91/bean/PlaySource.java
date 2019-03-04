@@ -11,6 +11,10 @@ public class PlaySource {
 
     public List<PlayUrl> playUrls;
 
+    public boolean hasPlayUrls() {
+        return null != playUrls && !playUrls.isEmpty();
+    }
+
     public long getMovieId() {
         return movieId;
     }
