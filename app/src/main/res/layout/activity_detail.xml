@@ -194,7 +194,7 @@
             app:tabMinWidth="150dp"
             app:tabScrollMode="scrollable"
             app:tabGravity="center"
-            app:tabPaddingBottom="12dp"
+            app:tabPaddingBottom="1dp"
             app:tabTextSelectedScale="1.07"
             app:tabTexSize="22dp"
             app:tabTextColor="@drawable/selector_detail_play_source_tab_font_color"/>

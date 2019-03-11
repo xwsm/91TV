@@ -14,16 +14,18 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "com.owen.tv91"
-        versionCode 3
-        versionName "0.0.3"
+        versionCode 4
+        versionName "0.0.4"
+
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.config
+
             ndk {
-                abiFilters "armeabi-v7a", "arm64-v8a"
+                abiFilters "armeabi"
             }
         }
         debug {
@@ -51,12 +53,12 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.5.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
-    //非必要依赖， log依赖，如果需要打印OkHttpLog需要添加
+    // 非必要依赖， log依赖，如果需要打印OkHttpLog需要添加
     implementation 'com.squareup.okhttp3:logging-interceptor:3.13.1'
 
-    //下载核心库（https://www.jianshu.com/p/77b48f0f647d）
+    // 下载核心库（https://www.jianshu.com/p/77b48f0f647d）
     implementation 'eason.linyuzai:eason-download:1.0.1'
-    //下载如有需要可以添加额外的监听器
+    // 下载如有需要可以添加额外的监听器
     implementation 'eason.linyuzai:eason-download-listeners:1.0.1'
 
     implementation 'com.github.bumptech.glide:glide:4.9.0'
@@ -70,9 +72,13 @@ dependencies {
     implementation 'com.owen:tv-gridlayout:1.0.0'
     implementation 'com.owen:tv-tablayout:1.0.1'
     implementation 'com.owen:tv-widget:1.0.1'
-    //    implementation 'com.huan.edu.tvplayer:PlayerLibrary:2.6.0'
     implementation project(':player')
 
-    implementation  'com.umeng.umsdk:analytics:8.0.0'
-    implementation  'com.umeng.umsdk:common:2.0.0'
+    implementation 'com.umeng.umsdk:analytics:8.0.0'
+    implementation 'com.umeng.umsdk:common:2.0.0'
+
+    // https://github.com/LitePalFramework/LitePal
+    implementation 'org.litepal.android:java:3.0.0'
+    //查看数据库及sp，电脑浏览器输入手机IP:8080 (https://github.com/amitshekhariitbhu/Android-Debug-Database)
+    debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
 }

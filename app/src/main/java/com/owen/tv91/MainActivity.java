@@ -27,12 +27,15 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.youngkaaa.yviewpager.YViewPager;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity {
     @BindView(R.id.search_button)
     Button mSearchBtn;
+    @BindView(R.id.history_button)
+    Button mHistoryBtn;
     @BindView(R.id.tablayout1)
     TvTabLayout mTabLayout;
     @BindView(R.id.activity_main_view_pager)
@@ -66,6 +69,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         mSearchBtn.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                v.animate().scaleX(hasFocus ? 1.1f : 1f).scaleY(hasFocus ? 1.1f : 1f).setDuration(300).start();
+            }
+        });
+
+        mHistoryBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, HistoryActivity.class));
+            }
+        });
+        mHistoryBtn.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 v.animate().scaleX(hasFocus ? 1.1f : 1f).scaleY(hasFocus ? 1.1f : 1f).setDuration(300).start();

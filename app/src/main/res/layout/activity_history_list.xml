@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fragment_list_content_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg1">
+
+    <com.owen.tvrecyclerview.widget.TvRecyclerView
+        android:id="@+id/activity_history_list_rv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="60dp"
+        android:paddingRight="60dp"
+        android:paddingTop="40dp"
+        android:paddingBottom="20dp"
+        android:orientation="vertical"
+        android:nextFocusLeft="@id/fragment_movie_list_menu_rv"
+        app:tv_selectedItemOffsetStart="9dp"
+        app:tv_selectedItemOffsetEnd="9dp"
+        app:tv_verticalSpacingWithMargins="14dp"
+        app:tv_horizontalSpacingWithMargins="16dp"
+        app:spanCount="6"
+        app:tv_layoutManager="V7GridLayoutManager"/>
+
+    <ProgressBar
+        android:id="@+id/activity_history_list_progress_bar"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/activity_history_empty_hint_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="invisible"
+        android:textSize="28sp"
+        android:textColor="@color/black_gray"
+        android:text="还没有观看任何影片！"/>
+
+</FrameLayout>

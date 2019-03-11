@@ -244,12 +244,9 @@ public class EduPlayerFragment extends Fragment implements EduIVideoView.OnEduMe
             EPLog.i("supported ABIS [" + Build.CPU_ABI + ", " + Build.CPU_ABI2 + "]");
         }
 
-        if (mPlayerSettings.isAndroidPlayer()) {
-            mVideoView.playVideoWithBean(mPlayerSettings.getCurrMedia());
-        } else {
+        if (!mPlayerSettings.isAndroidPlayer()) {
             mLoadingView.setVisibility(View.VISIBLE);
             mVideoView.initVideoLib();// init player
-            mVideoView.playVideoWithBean(mPlayerSettings.getCurrMedia());
 
 //            EPLibraryUtil.initialize(getContext().getApplicationContext(), new EPLibraryUtil.InitLibraryCallback() {
 //                @Override
@@ -268,6 +265,14 @@ public class EduPlayerFragment extends Fragment implements EduIVideoView.OnEduMe
 //                }
 //            });
         }
+
+        mVideoView.playVideoWithBean(mPlayerSettings.getCurrMedia());
+        // 续播功能
+        int playTime = PlayerSettings.getInstance(getContext()).getPlayTime();
+        if(playTime > 0) {
+            mVideoView.seekTo(playTime);
+        }
+
     }
 
     private void showErrorDialog() {

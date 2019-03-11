@@ -3,8 +3,11 @@ package com.owen.tv91;
 import android.app.Application;
 
 import com.owen.tv91.utils.ToastUtils;
+import com.tencent.smtt.sdk.QbSdk;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.commonsdk.UMConfigure;
+
+import org.litepal.LitePal;
 
 /**
  * @author ZhouSuQiang
@@ -20,10 +23,16 @@ public class App extends Application {
         instance = this;
         ToastUtils.initToast(this);
 
-        // 初始化SDK
+        // 友盟：初始化SDK
         UMConfigure.init(this, "5c77a8b00cafb212e3000383", "github", UMConfigure.DEVICE_TYPE_BOX, null);
-        // 选用AUTO页面采集模式
+        // 友盟：选用AUTO页面采集模式
         MobclickAgent.setPageCollectionMode(MobclickAgent.PageMode.AUTO);
+
+        // x5：初始化SDK
+        QbSdk.initX5Environment(this, null);
+
+        // 数据库初始化
+        LitePal.initialize(this);
     }
 
     public static App get() {

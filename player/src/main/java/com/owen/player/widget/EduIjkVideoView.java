@@ -237,12 +237,6 @@ public class EduIjkVideoView extends IjkVideoView implements EduIVideoView {
         }
 
         setVideoPath(bean.playUrl);
-        // 续播功能
-//                int mCurrentPosition = EPUtils.getPreferences(getContext(), bean.id, -100);
-//                if(mCurrentPosition > 0) {
-//                    EPLog.i(TAG, "mCurrentPosition="+mCurrentPosition);
-//                    seekTo(mCurrentPosition * 1000);
-//                }
         start();
     }
 

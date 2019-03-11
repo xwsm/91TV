@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -101,6 +102,7 @@ public class SearchActivity extends AppCompatActivity {
         mRecyclerView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
+                Log.i("zsq", "onFocusChange hasFocus="+hasFocus);
                 mFocusBorder.setVisible(hasFocus, hasFocus);
             }
         });

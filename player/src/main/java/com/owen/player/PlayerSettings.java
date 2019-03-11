@@ -49,7 +49,8 @@ public class PlayerSettings {
     private static PlayerSettings mInstance;
     
 //    private String mHuanId;
-    
+
+    private int mPlayTime;
     private int mPlayIndex;
     private List<MediaBean> mMediaBeanList;
     
@@ -143,6 +144,17 @@ public class PlayerSettings {
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    public PlayerSettings setPlayTime(int time) {
+        mPlayTime = time;
+        return this;
+    }
+
+    public int getPlayTime() {
+        int time = mPlayTime;
+        mPlayTime = 0;
+        return time;
     }
     
     public PlayerSettings setPlayIndex(int index) {

@@ -1,10 +1,12 @@
 package com.owen.tv91;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -15,10 +17,12 @@ import com.owen.adapter.CommonRecyclerViewAdapter;
 import com.owen.adapter.CommonRecyclerViewHolder;
 import com.owen.player.PlayerSettings;
 import com.owen.player.bean.MediaBean;
+import com.owen.player.bean.ParamBean;
 import com.owen.tab.TvTabLayout;
 import com.owen.tv91.bean.MovieDetail;
 import com.owen.tv91.bean.PlaySource;
 import com.owen.tv91.bean.PlayUrl;
+import com.owen.tv91.dao.HistoryMovie;
 import com.owen.tv91.network.NetWorkManager;
 import com.owen.tv91.network.response.ResponseTransformer;
 import com.owen.tv91.network.schedulers.SchedulerProvider;
@@ -26,6 +30,8 @@ import com.owen.tv91.utils.GlideApp;
 import com.owen.tv91.utils.ToastUtils;
 import com.owen.tvrecyclerview.widget.SimpleOnItemListener;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
+
+import org.litepal.LitePal;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -82,6 +88,9 @@ public class DetailActivity extends AppCompatActivity {
     
     private MovieDetail mMovieDetail;
     private Disposable mDisposable;
+    private HistoryMovie mHistoryMovie;
+    private int mHistoryPlayIndex;
+    private int mHistoryPlaySourceIndex;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -90,6 +99,10 @@ public class DetailActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         long id = getIntent().getLongExtra("id", 0);
 
+        List<HistoryMovie> historyMovies = LitePal.where("movieId = ?", "" + id).find(HistoryMovie.class);
+        if(null != historyMovies && !historyMovies.isEmpty()) {
+            mHistoryMovie = historyMovies.get(0);
+        }
 
         mDisposable = NetWorkManager.getRequest().detail(id)
                 .compose(SchedulerProvider.getInstance().applySchedulers())
@@ -104,6 +117,7 @@ public class DetailActivity extends AppCompatActivity {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
+                        throwable.printStackTrace();
                         mProgressBar.setVisibility(View.GONE);
                         ToastUtils.showShortToast("获取影片详情数据失败！");
                     }
@@ -113,7 +127,16 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(null != mMovieDetail && mMovieDetail.hasPlaySources()) {
-                    playMovie(mMovieDetail.playSources.get(0), 0);
+                    playMovie(mMovieDetail.playSources.get(mHistoryPlaySourceIndex), mHistoryPlayIndex);
+
+//                    if(TbsVideo.canUseTbsPlayer(getApplicationContext())) {
+//                        Bundle extraData = new Bundle();
+//                        extraData.putString("title", mMovieDetail.name);
+//                        extraData.putInt("screenMode", 102); //来实现默认全屏+控制栏等UI
+//                        TbsVideo.openVideo(getApplicationContext(),
+//                                mMovieDetail.playSources.get(0).playUrls.get(0).playUrl, extraData);
+//                    }
+
                 } else {
                     ToastUtils.showShortToast("播放地址出错！");
                 }
@@ -141,9 +164,16 @@ public class DetailActivity extends AppCompatActivity {
             mIntroTv.setText("剧情简介：" + mMovieDetail.intro);
 
             if(mMovieDetail.hasPlaySources()) {
+                if(null != mHistoryMovie) {
+                    mPlayButton.setText(String.format("续播 %s", mHistoryMovie.playUrlName));
+                } else if(mMovieDetail.hasPlaySources() && mMovieDetail.playSources.get(0).hasPlayUrls()){
+                    mPlayButton.setText(String.format("播放 %s", mMovieDetail.playSources.get(0).playUrls.get(0).name));
+                }
+
                 mTabLayout.addOnTabSelectedListener(new TvTabLayout.OnTabSelectedListener() {
                     @Override
                     public void onTabSelected(TvTabLayout.Tab tab) {
+                        mHistoryPlaySourceIndex = tab.getPosition();
                         final PlaySource playSource = mMovieDetail.playSources.get(tab.getPosition());
 
                         mPlayListRv.setAdapter(new PlayUrlAdapter(DetailActivity.this, playSource.playUrls), true);
@@ -177,25 +207,33 @@ public class DetailActivity extends AppCompatActivity {
                     }
                 });
 
+                mTabLayout.removeAllTabs();
                 int i = 0;
                 Iterator<PlaySource> iterator = mMovieDetail.playSources.iterator();
                 while (iterator.hasNext()) {
                     PlaySource playSource = iterator.next();
                     if(playSource.hasPlayUrls()) {
-                        mTabLayout.addTab(mTabLayout.newTab().setText(playSource.name), i == 0);
+                        boolean selected = null == mHistoryMovie ? (i == 0) : (mHistoryMovie.playSourceId == playSource.id);
+                        mTabLayout.addTab(mTabLayout.newTab().setText(playSource.name), selected);
+                        if(null != mHistoryMovie && selected) {
+                            mHistoryPlaySourceIndex = i;
+                        }
                         i++;
                     } else {
                         iterator.remove();
                     }
                 }
 
-                // 初始化焦点
-//                mPlayListRv.postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        mPlayListRv.requestDefaultFocus();
-//                    }
-//                }, 200);
+                if(null != mHistoryMovie) {
+                    int j = 0;
+                    for (PlayUrl playUrl : mMovieDetail.playSources.get(mHistoryPlaySourceIndex).playUrls) {
+                        if (playUrl.id == mHistoryMovie.playUrlId) {
+                            mHistoryPlayIndex = j;
+                            break;
+                        }
+                        j++;
+                    }
+                }
             }
         }
     }
@@ -211,10 +249,15 @@ public class DetailActivity extends AppCompatActivity {
             bean.playName = playUrl.name;
             data.add(bean);
         }
+
+        int time = (null != mHistoryMovie && mHistoryMovie.playUrlId
+                == playSource.playUrls.get(position).id) ? mHistoryMovie.playTime : 0;
         PlayerSettings.getInstance(getApplicationContext())
-                .setPlayerType(PlayerSettings.PLAYER_TYPE_IJK)
+                .setPlayerType(PlayerSettings.PLAYER_TYPE_EXO)
+                .setUsingHardwareDecoder(true)
                 .setMediaList(data)
                 .setPlayIndex(position)
+                .setPlayTime(time)
                 .startPlayer(DetailActivity.this);
     }
 
@@ -226,6 +269,40 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(null != data && resultCode == PlayerSettings.RESULT_CODE) {
+            int index = data.getIntExtra(ParamBean.KEY_PLAY_INDEX, 0);
+            int time = data.getIntExtra(ParamBean.KEY_PLAYED_TIME, 0);
+            int duration = data.getIntExtra(ParamBean.KEY_DURATION_TIME, 0);
+//            MediaBean mediaBean = data.getParcelableExtra(ParamBean.KEY_MEDIA_OBJECT);
+
+            final HistoryMovie historyMovie = null == mHistoryMovie ? new HistoryMovie() : mHistoryMovie;
+            historyMovie.movieId = mMovieDetail.id;
+            historyMovie.movieName = mMovieDetail.name;
+            historyMovie.movieAlias = mMovieDetail.alias;
+            historyMovie.movieChannel = mMovieDetail.channel;
+            historyMovie.movieImg = mMovieDetail.img;
+            historyMovie.movieScore = mMovieDetail.score;
+            historyMovie.movieShowDate = mMovieDetail.showDate;
+            historyMovie.movieSketch = mMovieDetail.sketch;
+            historyMovie.movieType = mMovieDetail.type;
+            PlaySource playSource = mMovieDetail.playSources.get(mTabLayout.getSelectedTabPosition());
+            historyMovie.playSourceId = playSource.id;
+            historyMovie.playSourceName = playSource.name;
+            historyMovie.playTime = time;
+            historyMovie.playDuration = duration;
+            historyMovie.playUrlId = playSource.playUrls.get(index).id;
+            historyMovie.playUrlName = playSource.playUrls.get(index).name;
+            historyMovie.updateDateMillis = System.currentTimeMillis();
+            historyMovie.saveOrUpdate("movieId = ?", "" + mMovieDetail.id);
+
+            mHistoryMovie = historyMovie;
+            mPlayButton.setText(String.format("续播 %s", mHistoryMovie.playUrlName));
+            mHistoryPlayIndex = index;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
     class PlayUrlAdapter extends CommonRecyclerViewAdapter<PlayUrl> {
 
