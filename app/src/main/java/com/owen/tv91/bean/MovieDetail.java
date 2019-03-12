@@ -18,6 +18,7 @@ public class MovieDetail implements Serializable {
     public String director; //导演，庄文强
     public String starring; //主演，周润发,郭富城,张静初,冯文娟
     public String type; //类型，动作片
+    public String types; //动作 爱情
     public String area; //地区，大陆
     public String language; //语言，国语
     public String showDate; //上映日期，2018
@@ -159,4 +160,11 @@ public class MovieDetail implements Serializable {
         this.channel = channel;
     }
 
+    public String getTypes() {
+        return types;
+    }
+
+    public void setTypes(String types) {
+        this.types = types;
+    }
 }

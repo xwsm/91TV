@@ -100,7 +100,7 @@
             tools:text="名称名称名称名称名称"
             app:layout_constraintLeft_toRightOf="@id/activity_detail_poster_iv"
             app:layout_constraintBottom_toBottomOf="@id/activity_detail_type_tv"
-            android:layout_marginLeft="300dp"
+            android:layout_marginLeft="350dp"
             />
 
         <TextView
@@ -126,7 +126,7 @@
             tools:text="名称"
             app:layout_constraintLeft_toRightOf="@id/activity_detail_poster_iv"
             app:layout_constraintTop_toBottomOf="@id/activity_detail_type_tv"
-            android:layout_marginLeft="300dp"
+            android:layout_marginLeft="350dp"
             />
 
         <TextView

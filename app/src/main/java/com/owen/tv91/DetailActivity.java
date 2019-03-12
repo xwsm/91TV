@@ -152,16 +152,16 @@ public class DetailActivity extends AppCompatActivity {
             mScoreTv.setText(mMovieDetail.score);
             mNameTv.setText(mMovieDetail.name);
             mSketchTv.setText(mMovieDetail.sketch);
-            mAliasTv.setText("别名：" + mMovieDetail.alias);
-            mDirectorTv.setText("导演：" + mMovieDetail.director);
-            mStarringTv.setText("主演：" + mMovieDetail.starring);
-            mTypeTv.setText("类型：" + mMovieDetail.type);
-            mAreaTv.setText("区域：" + mMovieDetail.area);
-            mLanguageTv.setText("语言：" + mMovieDetail.language);
-            mShowDateTv.setText("上映：" + mMovieDetail.showDate);
-            mDurationTv.setText("时长：" + mMovieDetail.duration);
-            mUpdateDateTv.setText("更新：" + mMovieDetail.updateDate);
-            mIntroTv.setText("剧情简介：" + mMovieDetail.intro);
+            mAliasTv.setText(String.format("别名：%s", mMovieDetail.alias));
+            mDirectorTv.setText(String.format("导演：%s", mMovieDetail.director));
+            mStarringTv.setText(String.format("主演：%s", mMovieDetail.starring));
+            mTypeTv.setText(String.format("类型：%s", TextUtils.isEmpty(mMovieDetail.types) ? mMovieDetail.type : mMovieDetail.types));
+            mAreaTv.setText(String.format("区域：%s", mMovieDetail.area));
+            mLanguageTv.setText(String.format("语言：%s", mMovieDetail.language));
+            mShowDateTv.setText(String.format("上映：%s", mMovieDetail.showDate));
+            mDurationTv.setText(String.format("时长：%s", mMovieDetail.duration));
+            mUpdateDateTv.setText(String.format("更新：%s", mMovieDetail.updateDate));
+            mIntroTv.setText(String.format("剧情简介：%s", mMovieDetail.intro));
 
             if(mMovieDetail.hasPlaySources()) {
                 if(null != mHistoryMovie) {
