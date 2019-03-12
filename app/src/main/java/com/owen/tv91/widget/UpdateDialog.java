@@ -104,7 +104,12 @@ public class UpdateDialog extends Dialog implements View.OnClickListener {
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             path = Environment.getExternalStorageDirectory().getPath() + "/91tv/download";
         } else {
-            path = Environment.getDataDirectory() + "/91tv/download";
+            path = v.getContext().getDir("download", Context.MODE_WORLD_READABLE).getPath();
+            try {
+                Runtime.getRuntime().exec("chmod 777 " + path);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         Log.i("zsq", "path="+path);
         String fileName = "91tv.apk";
