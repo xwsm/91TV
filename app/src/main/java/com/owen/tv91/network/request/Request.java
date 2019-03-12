@@ -5,6 +5,7 @@ import com.owen.tv91.bean.Channel;
 import com.owen.tv91.bean.Movie;
 import com.owen.tv91.bean.MovieDetail;
 import com.owen.tv91.bean.MoviesResult;
+import com.owen.tv91.bean.Qrcode;
 import com.owen.tv91.bean.SearchWithChannel;
 import com.owen.tv91.network.response.Response;
 
@@ -43,5 +44,8 @@ public interface Request {
 
     @POST("appUpdate.api")
     Observable<Response<AppUpdate>> update();
+
+    @POST("http://www.mxnzp.com/api/qrcode/create/single")
+    Observable<Response<Qrcode>> qrcode(@Query("content") String content, @Query("size") int size, @Query("type") int type);
 
 }
