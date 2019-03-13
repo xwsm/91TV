@@ -6,7 +6,8 @@ public class PlayUrl {
     public long id;
     public String name;
     public String playUrl;
-    public long playSourceId;
+    public long sourceId;
+    public long movieId;
     public String updateDate;
 
     public long getId() {
@@ -33,12 +34,12 @@ public class PlayUrl {
         this.playUrl = playUrl;
     }
 
-    public long getPlaySourceId() {
-        return playSourceId;
+    public long getSourceId() {
+        return sourceId;
     }
 
-    public void setPlaySourceId(long playSourceId) {
-        this.playSourceId = playSourceId;
+    public void setSourceId(long sourceId) {
+        this.sourceId = sourceId;
     }
 
     public String getUpdateDate() {
@@ -47,5 +48,13 @@ public class PlayUrl {
 
     public void setUpdateDate(String updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public long getMovieId() {
+        return movieId;
+    }
+
+    public void setMovieId(long movieId) {
+        this.movieId = movieId;
     }
 }

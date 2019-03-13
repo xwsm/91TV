@@ -5,9 +5,8 @@ import java.util.List;
 public class PlaySource {
 
     public long id;
-    public long movieId;
     public String name;
-    public String updateDate;
+    public String type;
 
     public List<PlayUrl> playUrls;
 
@@ -15,13 +14,6 @@ public class PlaySource {
         return null != playUrls && !playUrls.isEmpty();
     }
 
-    public long getMovieId() {
-        return movieId;
-    }
-
-    public void setMovieId(long movieId) {
-        this.movieId = movieId;
-    }
 
     public String getName() {
         return name;
@@ -29,14 +21,6 @@ public class PlaySource {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(String updateDate) {
-        this.updateDate = updateDate;
     }
 
     public long getId() {
@@ -47,4 +31,19 @@ public class PlaySource {
         this.id = id;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public List<PlayUrl> getPlayUrls() {
+        return playUrls;
+    }
+
+    public void setPlayUrls(List<PlayUrl> playUrls) {
+        this.playUrls = playUrls;
+    }
 }

@@ -90,7 +90,7 @@ public class DetailActivity extends AppCompatActivity {
     private Disposable mDisposable;
     private HistoryMovie mHistoryMovie;
     private int mHistoryPlayIndex;
-    private int mHistoryPlaySourceIndex;
+    private int mHistoryPlaySourceIndex = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -173,7 +173,6 @@ public class DetailActivity extends AppCompatActivity {
                 mTabLayout.addOnTabSelectedListener(new TvTabLayout.OnTabSelectedListener() {
                     @Override
                     public void onTabSelected(TvTabLayout.Tab tab) {
-                        mHistoryPlaySourceIndex = tab.getPosition();
                         final PlaySource playSource = mMovieDetail.playSources.get(tab.getPosition());
 
                         mPlayListRv.setAdapter(new PlayUrlAdapter(DetailActivity.this, playSource.playUrls), true);
@@ -213,9 +212,8 @@ public class DetailActivity extends AppCompatActivity {
                 while (iterator.hasNext()) {
                     PlaySource playSource = iterator.next();
                     if(playSource.hasPlayUrls()) {
-                        boolean selected = null == mHistoryMovie ? (i == 0) : (mHistoryMovie.playSourceId == playSource.id);
-                        mTabLayout.addTab(mTabLayout.newTab().setText(playSource.name), selected);
-                        if(null != mHistoryMovie && selected) {
+                        mTabLayout.addTab(mTabLayout.newTab().setText(playSource.name));
+                        if(null != mHistoryMovie && mHistoryMovie.playSourceId == playSource.id) {
                             mHistoryPlaySourceIndex = i;
                         }
                         i++;
@@ -223,6 +221,8 @@ public class DetailActivity extends AppCompatActivity {
                         iterator.remove();
                     }
                 }
+                // 选中指定tab
+                mTabLayout.selectTab(mHistoryPlaySourceIndex);
 
                 if(null != mHistoryMovie) {
                     int j = 0;
@@ -300,6 +300,7 @@ public class DetailActivity extends AppCompatActivity {
             mHistoryMovie = historyMovie;
             mPlayButton.setText(String.format("续播 %s", mHistoryMovie.playUrlName));
             mHistoryPlayIndex = index;
+            mHistoryPlaySourceIndex = mTabLayout.getSelectedTabPosition();
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
