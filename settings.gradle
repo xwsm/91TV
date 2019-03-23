@@ -1,1 +1,10 @@
 include ':app', ':player'
+
+//include ':tv-recyclerview'
+//project(':tv-recyclerview').projectDir = new File('../TvRecyclerView/tv-recyclerview')
+//
+//include ':tv-focusborder'
+//project(':tv-focusborder').projectDir = new File('../TvFocusBorder/tv-focusborder')
+//
+//include ':tv-widget'
+//project(':tv-widget').projectDir = new File('../TvWidget/tv-widget')

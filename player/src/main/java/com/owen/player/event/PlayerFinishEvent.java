@@ -1,4 +1,4 @@
-package com.owen.player;
+package com.owen.player.event;
 
 
 public class PlayerFinishEvent {

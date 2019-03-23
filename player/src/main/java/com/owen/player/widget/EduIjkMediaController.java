@@ -255,7 +255,7 @@ public class EduIjkMediaController extends FrameLayout implements EduIMediaContr
         if (null != mAnchorView && null != mProgressWindow && !mProgressWindow.isShowing()) {
             setProgress();
             MediaBean mediaBean = PlayerSettings.getInstance(mContext).getCurrMedia();
-            mProgressWindow.setMediaName(null == mediaBean ? "" : mediaBean.name);
+            mProgressWindow.setMediaName(null == mediaBean ? "" : mediaBean.name + " - " + mediaBean.playName);
             mProgressWindow.showAtLocation(mAnchorView, Gravity.BOTTOM, 0, 0);
             mHandler.sendEmptyMessage(MSG_UPDATE_PROGRESS);
 //            backgroundAlpha(0.2f);

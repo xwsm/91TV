@@ -3,6 +3,7 @@ package com.owen.tv91;
 import android.app.Application;
 
 import com.owen.tv91.utils.ToastUtils;
+import com.owen.tvrecyclerview.utils.Loger;
 import com.tencent.smtt.sdk.QbSdk;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.commonsdk.UMConfigure;
@@ -33,6 +34,8 @@ public class App extends Application {
 
         // 数据库初始化
         LitePal.initialize(this);
+
+        Loger.isDebug = true;
     }
 
     public static App get() {

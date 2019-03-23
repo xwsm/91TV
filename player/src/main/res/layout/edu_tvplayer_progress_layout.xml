@@ -23,16 +23,6 @@
             android:textSize="@dimen/x24"/>
 
         <TextView
-            android:id="@+id/tv_curr_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:text="时间：12:32"
-            android:textColor="@color/edu_tvplayer_btn_pressed"
-            android:textSize="@dimen/x24"
-            android:visibility="gone"/>
-
-        <TextView
             android:id="@+id/tv_media_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -47,7 +37,7 @@
         <SeekBar
             android:id="@+id/seek_bar_progress"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="20dp"
             android:layout_below="@id/tv_media_name"
             android:layout_marginRight="@dimen/x4"
             android:layout_marginTop="@dimen/x2"

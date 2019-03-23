@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -15,10 +16,14 @@ import android.widget.TextView;
 
 import com.owen.adapter.CommonRecyclerViewAdapter;
 import com.owen.adapter.CommonRecyclerViewHolder;
+import com.owen.focus.FocusBorder;
+import com.owen.player.PlayProgressListener;
 import com.owen.player.PlayerSettings;
 import com.owen.player.bean.MediaBean;
 import com.owen.player.bean.ParamBean;
 import com.owen.tab.TvTabLayout;
+import com.owen.tv91.adapter.MovieListAdapter;
+import com.owen.tv91.bean.Movie;
 import com.owen.tv91.bean.MovieDetail;
 import com.owen.tv91.bean.PlaySource;
 import com.owen.tv91.bean.PlayUrl;
@@ -26,6 +31,7 @@ import com.owen.tv91.dao.HistoryMovie;
 import com.owen.tv91.network.NetWorkManager;
 import com.owen.tv91.network.response.ResponseTransformer;
 import com.owen.tv91.network.schedulers.SchedulerProvider;
+import com.owen.tv91.utils.FocusBroderHelper;
 import com.owen.tv91.utils.GlideApp;
 import com.owen.tv91.utils.ToastUtils;
 import com.owen.tvrecyclerview.widget.SimpleOnItemListener;
@@ -41,13 +47,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import jp.wasabeef.glide.transformations.BlurTransformation;
 
 /**
  * @author ZhouSuQiang
  * @email zhousuqiang@126.com
  * @date 2019/1/17
  */
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements PlayProgressListener {
 
     @BindView(R.id.activity_detail_poster_iv)
     public ImageView mPosterIv;
@@ -85,9 +92,13 @@ public class DetailActivity extends AppCompatActivity {
     TvRecyclerView mPlayListRv;
     @BindView(R.id.activity_detail_play_btn)
     Button mPlayButton;
+    @BindView(R.id.activity_detail_bg_iv)
+    ImageView mBgIv;
+    @BindView(R.id.activity_detail_similar_movies_rv)
+    TvRecyclerView mSimilarMoviesRv;
     
     private MovieDetail mMovieDetail;
-    private Disposable mDisposable;
+    private List<Disposable> mDisposables = new ArrayList<>();
     private HistoryMovie mHistoryMovie;
     private int mHistoryPlayIndex;
     private int mHistoryPlaySourceIndex = 0;
@@ -97,6 +108,12 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
+
+        mSimilarMoviesRv.setFocusable(false);
+        mSimilarMoviesRv.setFocusableInTouchMode(false);
+        mPlayListRv.setFocusable(false);
+        mPlayListRv.setFocusableInTouchMode(false);
+
         long id = getIntent().getLongExtra("id", 0);
 
         List<HistoryMovie> historyMovies = LitePal.where("movieId = ?", "" + id).find(HistoryMovie.class);
@@ -104,7 +121,7 @@ public class DetailActivity extends AppCompatActivity {
             mHistoryMovie = historyMovies.get(0);
         }
 
-        mDisposable = NetWorkManager.getRequest().detail(id)
+        Disposable disposable = NetWorkManager.getRequest().detail(id)
                 .compose(SchedulerProvider.getInstance().applySchedulers())
                 .compose(ResponseTransformer.handleResult())
                 .subscribe(new Consumer<MovieDetail>() {
@@ -122,21 +139,48 @@ public class DetailActivity extends AppCompatActivity {
                         ToastUtils.showShortToast("获取影片详情数据失败！");
                     }
                 });
+        mDisposables.add(disposable);
+        disposable = NetWorkManager.getRequest().similarMovies(id, 12)
+                .compose(SchedulerProvider.getInstance().applySchedulers())
+                .compose(ResponseTransformer.handleResult())
+                .subscribe(new Consumer<List<Movie>>() {
+                    @Override
+                    public void accept(List<Movie> movies) throws Exception {
+                        mSimilarMoviesRv.setAdapter(new MovieListAdapter(getApplicationContext(), movies));
+                        mSimilarMoviesRv.setOnItemListener(new SimpleOnItemListener() {
+                            @Override
+                            public void onItemClick(TvRecyclerView parent, View itemView, int position) {
+                                Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
+                                intent.putExtra("id", movies.get(position).id);
+                                startActivity(intent);
+                            }
+
+                            @Override
+                            public void onItemSelected(TvRecyclerView parent, View itemView, int position) {
+                                itemView.animate().scaleX(1.1f).scaleY(1.1f).setDuration(300).start();
+                            }
+
+                            @Override
+                            public void onItemPreSelected(TvRecyclerView parent, View itemView, int position) {
+                                itemView.animate().scaleX(1f).scaleY(1f).setDuration(300).start();
+                            }
+                        });
+
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        throwable.printStackTrace();
+                        ToastUtils.showShortToast("获取相关推荐影片失败！");
+                    }
+                });
+        mDisposables.add(disposable);
 
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(null != mMovieDetail && mMovieDetail.hasPlaySources()) {
                     playMovie(mMovieDetail.playSources.get(mHistoryPlaySourceIndex), mHistoryPlayIndex);
-
-//                    if(TbsVideo.canUseTbsPlayer(getApplicationContext())) {
-//                        Bundle extraData = new Bundle();
-//                        extraData.putString("title", mMovieDetail.name);
-//                        extraData.putInt("screenMode", 102); //来实现默认全屏+控制栏等UI
-//                        TbsVideo.openVideo(getApplicationContext(),
-//                                mMovieDetail.playSources.get(0).playUrls.get(0).playUrl, extraData);
-//                    }
-
                 } else {
                     ToastUtils.showShortToast("播放地址出错！");
                 }
@@ -146,6 +190,9 @@ public class DetailActivity extends AppCompatActivity {
 
     private void setData() {
         if(null != mMovieDetail) {
+            GlideApp.with(this).load(mMovieDetail.img)
+                    .transform(new BlurTransformation(40, 7))
+                    .into(mBgIv);
             GlideApp.with(this).load(mMovieDetail.img).placeholder(R.drawable.icon_img_default).into(mPosterIv);
             mScoreTv.setVisibility(TextUtils.isEmpty(mMovieDetail.score) || TextUtils.equals(mMovieDetail.score, "0.0")
                             ? View.INVISIBLE : View.VISIBLE);
@@ -212,7 +259,7 @@ public class DetailActivity extends AppCompatActivity {
                 while (iterator.hasNext()) {
                     PlaySource playSource = iterator.next();
                     if(playSource.hasPlayUrls()) {
-                        mTabLayout.addTab(mTabLayout.newTab().setText(playSource.name));
+                        mTabLayout.addTab(mTabLayout.newTab().setText(playSource.name.toUpperCase()));
                         if(null != mHistoryMovie && mHistoryMovie.playSourceId == playSource.id) {
                             mHistoryPlaySourceIndex = i;
                         }
@@ -253,29 +300,36 @@ public class DetailActivity extends AppCompatActivity {
         int time = (null != mHistoryMovie && mHistoryMovie.playUrlId
                 == playSource.playUrls.get(position).id) ? mHistoryMovie.playTime : 0;
         PlayerSettings.getInstance(getApplicationContext())
-                .setPlayerType(PlayerSettings.PLAYER_TYPE_EXO)
+                .setPlayerType(PlayerSettings.PLAYER_TYPE_AUTO)
                 .setUsingHardwareDecoder(true)
                 .setMediaList(data)
                 .setPlayIndex(position)
                 .setPlayTime(time)
+                .setPlayProgressListener(this)
                 .startPlayer(DetailActivity.this);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(null != mDisposable && !mDisposable.isDisposed()) {
-            mDisposable.dispose();
+
+        for(Disposable disposable : mDisposables) {
+            if (disposable.isDisposed()) {
+                disposable.dispose();
+            }
         }
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if(null != data && resultCode == PlayerSettings.RESULT_CODE) {
+    public void onPlayProgress(@Nullable Intent data) {
+        Log.i("zzssqq", "onPlayProgress...");
+        if(null != data) {
             int index = data.getIntExtra(ParamBean.KEY_PLAY_INDEX, 0);
             int time = data.getIntExtra(ParamBean.KEY_PLAYED_TIME, 0);
             int duration = data.getIntExtra(ParamBean.KEY_DURATION_TIME, 0);
 //            MediaBean mediaBean = data.getParcelableExtra(ParamBean.KEY_MEDIA_OBJECT);
+
+            Log.i("zzssqq", "time="+time+" duration="+duration);
 
             final HistoryMovie historyMovie = null == mHistoryMovie ? new HistoryMovie() : mHistoryMovie;
             historyMovie.movieId = mMovieDetail.id;
@@ -302,7 +356,6 @@ public class DetailActivity extends AppCompatActivity {
             mHistoryPlayIndex = index;
             mHistoryPlaySourceIndex = mTabLayout.getSelectedTabPosition();
         }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     class PlayUrlAdapter extends CommonRecyclerViewAdapter<PlayUrl> {

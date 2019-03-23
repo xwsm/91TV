@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
+import com.owen.player.event.PlayerFinishEvent;
 import com.owen.player.utils.EPLog;
 
 import org.greenrobot.eventbus.EventBus;
@@ -75,9 +76,10 @@ public class EduPlayerActivity extends FragmentActivity implements EduPlayerFrag
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
-            case KeyEvent.KEYCODE_HOME:
-                    onFinish(false);
+            case KeyEvent.KEYCODE_HOME: {
+                onFinish(false);
                 break;
+            }
         }
         return super.onKeyDown(keyCode, event);
 

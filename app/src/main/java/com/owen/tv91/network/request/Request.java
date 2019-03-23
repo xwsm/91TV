@@ -36,6 +36,15 @@ public interface Request {
     @POST("detail.api")
     Observable<Response<MovieDetail>> detail(@Query("id") long id);
 
+    /**
+     * 相似影片
+     * @param id
+     * @param size
+     * @return
+     */
+    @POST("similarMovies.api")
+    Observable<Response<List<Movie>>> similarMovies(@Query("id") long id, @Query("size") int size);
+
     @POST("search.api")
     Observable<Response<List<Movie>>> search(@Query("key") String key);
 

@@ -63,22 +63,25 @@ dependencies {
 
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+    implementation 'jp.wasabeef:glide-transformations:4.0.1'
 
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
     implementation 'com.owen:tv-recyclerview:2.0.3'
-    implementation 'com.owen:tv-focusborder:1.0.8'
-    implementation 'com.owen:tv-gridlayout:1.0.0'
+//    implementation project(':tv-recyclerview')
+    implementation ('com.owen:tv-focusborder:1.0.8')
+//    implementation project(':tv-focusborder')
+    implementation ('com.owen:tv-gridlayout:1.0.0')
     implementation 'com.owen:tv-tablayout:1.0.1'
-    implementation 'com.owen:tv-widget:1.0.1'
+    implementation ('com.owen:tv-widget:1.0.1')
+//    implementation project(':tv-widget')
     implementation project(':player')
-
     implementation 'com.umeng.umsdk:analytics:8.0.0'
     implementation 'com.umeng.umsdk:common:2.0.0'
 
     // https://github.com/LitePalFramework/LitePal
-    implementation 'org.litepal.android:java:3.0.0'
+    implementation "org.litepal.android:java:3.0.0"
     //查看数据库及sp，电脑浏览器输入手机IP:8080 (https://github.com/amitshekhariitbhu/Android-Debug-Database)
     debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
 }

@@ -3,7 +3,7 @@
 
     <item android:id="@android:id/background">
         <shape>
-            <corners android:radius="@dimen/x18"/>
+            <corners android:radius="12dp"/>
             <solid android:color="@color/edu_tvplayer_seekbar_bg_color"/>
         </shape>
     </item>
@@ -11,7 +11,7 @@
     <item android:id="@android:id/secondaryProgress">
         <clip>
         <shape>
-            <corners android:radius="@dimen/x18"/>
+            <corners android:radius="12dp"/>
             <solid android:color="@color/edu_tvplayer_seekbar_secondaryProgress_color"/>
         </shape>
         </clip>
@@ -20,7 +20,7 @@
     <item android:id="@android:id/progress">
         <clip>
         <shape>
-            <corners android:radius="@dimen/x18"/>
+            <corners android:radius="12dp"/>
             <solid android:color="@color/edu_tvplayer_seekbar_progress_color"/>
         </shape>
         </clip>

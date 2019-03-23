@@ -20,6 +20,7 @@ import android.widget.ImageView;
 
 import com.owen.player.bean.MediaBean;
 import com.owen.player.bean.ParamBean;
+import com.owen.player.event.PlayerEnterBackGroundEvent;
 import com.owen.player.utils.EPLog;
 import com.owen.player.utils.EPUtils;
 import com.owen.player.widget.EduIMediaController;
@@ -156,12 +157,12 @@ public class EduPlayerFragment extends Fragment implements EduIVideoView.OnEduMe
     @Override
     public void onPause() {
         super.onPause();
-        Log.i("ygx", "onPause");
+        Log.i(TAG, "onPause");
+
+        callbackProgress();
+
         if (null != mVideoView && mVideoView.isPlaying()) {
             mVideoView.pause();
-        }
-        if (!mIsBackGound) {
-            killPlayer();
         }
 
     }
@@ -174,7 +175,7 @@ public class EduPlayerFragment extends Fragment implements EduIVideoView.OnEduMe
     }
 
     private void killPlayer() {
-        Log.i("ygx", "killPlayer");
+        Log.i(TAG, "killPlayer");
         if (null != mErrorDialog && mErrorDialog.isShowing()) {
             mErrorDialog.cancel();
         }
@@ -496,6 +497,13 @@ public class EduPlayerFragment extends Fragment implements EduIVideoView.OnEduMe
 
         return true;
     }
+
+    public void callbackProgress() {
+        if(null != mPlayerSettings && null != mPlayerSettings.getPlayProgressListener()) {
+            mPlayerSettings.getPlayProgressListener().onPlayProgress(getResultIntent());
+        }
+    }
+
 
     @Override
     public void onNoPermission(EduIVideoView mp, MediaBean bean) {

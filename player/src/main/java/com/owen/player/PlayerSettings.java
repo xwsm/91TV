@@ -32,6 +32,7 @@ import java.util.List;
 
 
 public class PlayerSettings {
+
     public static final int REQUEST_CODE = 9001;
     public static final int RESULT_CODE = 9002;
     public static final int RESULT_CODE_PAY = 9003;
@@ -61,6 +62,8 @@ public class PlayerSettings {
     private boolean mIsRequestPlayAddress = false;
     private String mRequestPlayAddressUrl;
     private String mRequestCheckOrderUrl;
+
+    private PlayProgressListener mPlayProgressListener;
 
     private PlayerSettings(Context context) {
         mAppContext = context.getApplicationContext();
@@ -112,6 +115,16 @@ public class PlayerSettings {
 //        this.mHuanId = huanId;
 //        return this;
 //    }
+
+
+    public PlayerSettings setPlayProgressListener(PlayProgressListener playProgressListener) {
+        mPlayProgressListener = playProgressListener;
+        return this;
+    }
+
+    public PlayProgressListener getPlayProgressListener() {
+        return mPlayProgressListener;
+    }
 
     public boolean getUsingHardwareDecoder() {
         String key = mAppContext.getString(R.string.pref_key_using_media_codec);
