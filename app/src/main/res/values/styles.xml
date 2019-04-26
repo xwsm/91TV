@@ -6,7 +6,7 @@
         <item name="android:windowFullscreen">true</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/orange_color</item>
     </style>
 
     <style name="detail_intro_text">
@@ -31,6 +31,12 @@
         <item name="android:background">@color/keyboard_item_bg</item>
         <item name="layout_columnWeight">1</item>
         <item name="layout_rowWeight">1</item>
+    </style>
+
+    <style name="LoadingProgressBar">
+        <item name="android:layout_width">90sp</item>
+        <item name="android:layout_height">90sp</item>
+        <item name="android:layout_gravity">center</item>
     </style>
 
 </resources>

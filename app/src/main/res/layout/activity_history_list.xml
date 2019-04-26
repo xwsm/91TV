@@ -4,7 +4,7 @@
     android:id="@+id/fragment_list_content_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg1">
+    android:background="@drawable/bg">
 
     <com.owen.tvrecyclerview.widget.TvRecyclerView
         android:id="@+id/activity_history_list_rv"
@@ -25,9 +25,7 @@
 
     <ProgressBar
         android:id="@+id/activity_history_list_progress_bar"
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        style="@style/LoadingProgressBar"/>
 
     <TextView
         android:id="@+id/activity_history_empty_hint_tv"

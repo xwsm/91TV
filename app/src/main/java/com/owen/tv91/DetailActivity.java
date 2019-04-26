@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -56,6 +57,8 @@ import jp.wasabeef.glide.transformations.BlurTransformation;
  */
 public class DetailActivity extends AppCompatActivity implements PlayProgressListener {
 
+    @BindView(R.id.activity_detail_content_layout_cl)
+    ViewGroup mContentLayout;
     @BindView(R.id.activity_detail_poster_iv)
     public ImageView mPosterIv;
     @BindView(R.id.activity_detail_name_tv)
@@ -96,7 +99,7 @@ public class DetailActivity extends AppCompatActivity implements PlayProgressLis
     ImageView mBgIv;
     @BindView(R.id.activity_detail_similar_movies_rv)
     TvRecyclerView mSimilarMoviesRv;
-    
+
     private MovieDetail mMovieDetail;
     private List<Disposable> mDisposables = new ArrayList<>();
     private HistoryMovie mHistoryMovie;
@@ -109,25 +112,43 @@ public class DetailActivity extends AppCompatActivity implements PlayProgressLis
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
 
-        mSimilarMoviesRv.setFocusable(false);
-        mSimilarMoviesRv.setFocusableInTouchMode(false);
-        mPlayListRv.setFocusable(false);
-        mPlayListRv.setFocusableInTouchMode(false);
-
-        long id = getIntent().getLongExtra("id", 0);
-
-        List<HistoryMovie> historyMovies = LitePal.where("movieId = ?", "" + id).find(HistoryMovie.class);
+        long movieId = getIntent().getLongExtra("id", 0);
+        List<HistoryMovie> historyMovies = LitePal.where("movieId = ?", "" + movieId).find(HistoryMovie.class);
         if(null != historyMovies && !historyMovies.isEmpty()) {
             mHistoryMovie = historyMovies.get(0);
         }
 
-        Disposable disposable = NetWorkManager.getRequest().detail(id)
+        initView();
+        loadDatas(movieId);
+    }
+
+    private void initView() {
+        mContentLayout.setVisibility(View.INVISIBLE);
+        mSimilarMoviesRv.setFocusable(false);
+        mSimilarMoviesRv.setFocusableInTouchMode(false);
+        mPlayListRv.setFocusable(false);
+        mPlayListRv.setFocusableInTouchMode(false);
+        mPlayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(null != mMovieDetail && mMovieDetail.hasPlaySources()) {
+                    playMovie(mMovieDetail.playSources.get(mHistoryPlaySourceIndex), mHistoryPlayIndex);
+                } else {
+                    ToastUtils.showShortToast("播放地址出错！");
+                }
+            }
+        });
+    }
+
+    private void loadDatas(long movieId) {
+        Disposable disposable = NetWorkManager.getRequest().detail(movieId)
                 .compose(SchedulerProvider.getInstance().applySchedulers())
                 .compose(ResponseTransformer.handleResult())
                 .subscribe(new Consumer<MovieDetail>() {
                     @Override
                     public void accept(MovieDetail movieDetail) throws Exception {
                         mProgressBar.setVisibility(View.GONE);
+                        mContentLayout.setVisibility(View.VISIBLE);
                         mMovieDetail = movieDetail;
                         setData();
                     }
@@ -136,11 +157,13 @@ public class DetailActivity extends AppCompatActivity implements PlayProgressLis
                     public void accept(Throwable throwable) throws Exception {
                         throwable.printStackTrace();
                         mProgressBar.setVisibility(View.GONE);
+                        mContentLayout.setVisibility(View.VISIBLE);
                         ToastUtils.showShortToast("获取影片详情数据失败！");
                     }
                 });
         mDisposables.add(disposable);
-        disposable = NetWorkManager.getRequest().similarMovies(id, 12)
+
+        disposable = NetWorkManager.getRequest().similarMovies(movieId, 12)
                 .compose(SchedulerProvider.getInstance().applySchedulers())
                 .compose(ResponseTransformer.handleResult())
                 .subscribe(new Consumer<List<Movie>>() {
@@ -175,114 +198,115 @@ public class DetailActivity extends AppCompatActivity implements PlayProgressLis
                     }
                 });
         mDisposables.add(disposable);
-
-        mPlayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(null != mMovieDetail && mMovieDetail.hasPlaySources()) {
-                    playMovie(mMovieDetail.playSources.get(mHistoryPlaySourceIndex), mHistoryPlayIndex);
-                } else {
-                    ToastUtils.showShortToast("播放地址出错！");
-                }
-            }
-        });
     }
 
     private void setData() {
-        if(null != mMovieDetail) {
-            GlideApp.with(this).load(mMovieDetail.img)
-                    .transform(new BlurTransformation(40, 7))
-                    .into(mBgIv);
-            GlideApp.with(this).load(mMovieDetail.img).placeholder(R.drawable.icon_img_default).into(mPosterIv);
-            mScoreTv.setVisibility(TextUtils.isEmpty(mMovieDetail.score) || TextUtils.equals(mMovieDetail.score, "0.0")
-                            ? View.INVISIBLE : View.VISIBLE);
-            mScoreTv.setText(mMovieDetail.score);
-            mNameTv.setText(mMovieDetail.name);
-            mSketchTv.setText(mMovieDetail.sketch);
-            mAliasTv.setText(String.format("别名：%s", mMovieDetail.alias));
-            mDirectorTv.setText(String.format("导演：%s", mMovieDetail.director));
-            mStarringTv.setText(String.format("主演：%s", mMovieDetail.starring));
-            mTypeTv.setText(String.format("类型：%s", TextUtils.isEmpty(mMovieDetail.types) ? mMovieDetail.type : mMovieDetail.types));
-            mAreaTv.setText(String.format("区域：%s", mMovieDetail.area));
-            mLanguageTv.setText(String.format("语言：%s", mMovieDetail.language));
-            mShowDateTv.setText(String.format("上映：%s", mMovieDetail.showDate));
-            mDurationTv.setText(String.format("时长：%s", mMovieDetail.duration));
-            mUpdateDateTv.setText(String.format("更新：%s", mMovieDetail.updateDate));
-            mIntroTv.setText(String.format("剧情简介：%s", mMovieDetail.intro));
+        if(null == mMovieDetail) {
+            return;
+        }
 
-            if(mMovieDetail.hasPlaySources()) {
-                if(null != mHistoryMovie) {
-                    mPlayButton.setText(String.format("续播 %s", mHistoryMovie.playUrlName));
-                } else if(mMovieDetail.hasPlaySources() && mMovieDetail.playSources.get(0).hasPlayUrls()){
-                    mPlayButton.setText(String.format("播放 %s", mMovieDetail.playSources.get(0).playUrls.get(0).name));
+        GlideApp.with(this).load(mMovieDetail.img)
+                .transform(new BlurTransformation(40, 7))
+                .into(mBgIv);
+        GlideApp.with(this).load(mMovieDetail.img).placeholder(R.drawable.icon_img_default).into(mPosterIv);
+
+        mScoreTv.setVisibility(TextUtils.isEmpty(mMovieDetail.score) || TextUtils.equals(mMovieDetail.score, "0.0")
+                        ? View.INVISIBLE : View.VISIBLE);
+        mScoreTv.setText(mMovieDetail.score);
+        mNameTv.setText(mMovieDetail.name);
+        mSketchTv.setText(mMovieDetail.sketch);
+        mAliasTv.setText(String.format("别名：%s", mMovieDetail.alias));
+        mDirectorTv.setText(String.format("导演：%s", mMovieDetail.director));
+        mStarringTv.setText(String.format("主演：%s", mMovieDetail.starring));
+        mTypeTv.setText(String.format("类型：%s", TextUtils.isEmpty(mMovieDetail.types) ? mMovieDetail.type : mMovieDetail.types));
+        mAreaTv.setText(String.format("区域：%s", mMovieDetail.area));
+        mLanguageTv.setText(String.format("语言：%s", mMovieDetail.language));
+        mShowDateTv.setText(String.format("上映：%s", mMovieDetail.showDate));
+        mDurationTv.setText(String.format("时长：%s", mMovieDetail.duration));
+        mUpdateDateTv.setText(String.format("更新：%s", mMovieDetail.updateDate));
+        mIntroTv.setText(String.format("剧情简介：%s", mMovieDetail.intro));
+
+        if(mMovieDetail.hasPlaySources()) {
+            if(null != mHistoryMovie) {
+                mPlayButton.setText(String.format("续播 %s", mHistoryMovie.playUrlName));
+            } else if(mMovieDetail.hasPlaySources() && mMovieDetail.playSources.get(0).hasPlayUrls()){
+                mPlayButton.setText(String.format("播放 %s", mMovieDetail.playSources.get(0).playUrls.get(0).name));
+            }
+
+            mTabLayout.addOnTabSelectedListener(new TvTabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TvTabLayout.Tab tab) {
+                    final PlaySource playSource = mMovieDetail.playSources.get(tab.getPosition());
+
+                    mPlayListRv.setAdapter(new PlayUrlAdapter(DetailActivity.this, playSource.playUrls), true);
+
+                    mPlayListRv.setOnItemListener(new SimpleOnItemListener() {
+                        @Override
+                        public void onItemSelected(TvRecyclerView parent, View itemView, int position) {
+                            itemView.animate().scaleX(1.1f).scaleY(1.1f).setDuration(300).start();
+                        }
+
+                        @Override
+                        public void onItemPreSelected(TvRecyclerView parent, View itemView, int position) {
+                            itemView.animate().scaleX(1f).scaleY(1f).setDuration(300).start();
+                        }
+
+                        @Override
+                        public void onItemClick(TvRecyclerView parent, View itemView, int position) {
+                            playMovie(playSource, position);
+                        }
+                    });
                 }
 
-                mTabLayout.addOnTabSelectedListener(new TvTabLayout.OnTabSelectedListener() {
-                    @Override
-                    public void onTabSelected(TvTabLayout.Tab tab) {
-                        final PlaySource playSource = mMovieDetail.playSources.get(tab.getPosition());
+                @Override
+                public void onTabUnselected(TvTabLayout.Tab tab) {
 
-                        mPlayListRv.setAdapter(new PlayUrlAdapter(DetailActivity.this, playSource.playUrls), true);
-
-                        mPlayListRv.setOnItemListener(new SimpleOnItemListener() {
-                            @Override
-                            public void onItemSelected(TvRecyclerView parent, View itemView, int position) {
-                                itemView.animate().scaleX(1.1f).scaleY(1.1f).setDuration(300).start();
-                            }
-
-                            @Override
-                            public void onItemPreSelected(TvRecyclerView parent, View itemView, int position) {
-                                itemView.animate().scaleX(1f).scaleY(1f).setDuration(300).start();
-                            }
-
-                            @Override
-                            public void onItemClick(TvRecyclerView parent, View itemView, int position) {
-                                playMovie(playSource, position);
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onTabUnselected(TvTabLayout.Tab tab) {
-
-                    }
-
-                    @Override
-                    public void onTabReselected(TvTabLayout.Tab tab) {
-
-                    }
-                });
-
-                mTabLayout.removeAllTabs();
-                int i = 0;
-                Iterator<PlaySource> iterator = mMovieDetail.playSources.iterator();
-                while (iterator.hasNext()) {
-                    PlaySource playSource = iterator.next();
-                    if(playSource.hasPlayUrls()) {
-                        mTabLayout.addTab(mTabLayout.newTab().setText(playSource.name.toUpperCase()));
-                        if(null != mHistoryMovie && mHistoryMovie.playSourceId == playSource.id) {
-                            mHistoryPlaySourceIndex = i;
-                        }
-                        i++;
-                    } else {
-                        iterator.remove();
-                    }
                 }
-                // 选中指定tab
-                mTabLayout.selectTab(mHistoryPlaySourceIndex);
 
-                if(null != mHistoryMovie) {
-                    int j = 0;
-                    for (PlayUrl playUrl : mMovieDetail.playSources.get(mHistoryPlaySourceIndex).playUrls) {
-                        if (playUrl.id == mHistoryMovie.playUrlId) {
-                            mHistoryPlayIndex = j;
-                            break;
-                        }
-                        j++;
+                @Override
+                public void onTabReselected(TvTabLayout.Tab tab) {
+
+                }
+            });
+
+            mTabLayout.removeAllTabs();
+            int i = 0;
+            Iterator<PlaySource> iterator = mMovieDetail.playSources.iterator();
+            while (iterator.hasNext()) {
+                PlaySource playSource = iterator.next();
+                if(playSource.hasPlayUrls()) {
+                    mTabLayout.addTab(mTabLayout.newTab().setText(playSource.name.toUpperCase()));
+                    if(null != mHistoryMovie && mHistoryMovie.playSourceId == playSource.id) {
+                        mHistoryPlaySourceIndex = i;
                     }
+                    i++;
+                } else {
+                    iterator.remove();
+                }
+            }
+            // 选中指定tab
+            mTabLayout.selectTab(mHistoryPlaySourceIndex);
+
+            if(null != mHistoryMovie) {
+                int j = 0;
+                for (PlayUrl playUrl : mMovieDetail.playSources.get(mHistoryPlaySourceIndex).playUrls) {
+                    if (playUrl.id == mHistoryMovie.playUrlId) {
+                        mHistoryPlayIndex = j;
+                        break;
+                    }
+                    j++;
                 }
             }
         }
+
+        // 初始化焦点
+        mPlayButton.post(new Runnable() {
+            @Override
+            public void run() {
+                mPlayButton.requestFocus();
+                mPlayButton.requestFocusFromTouch();
+            }
+        });
     }
 
     private void playMovie(PlaySource playSource, int position) {
@@ -300,7 +324,7 @@ public class DetailActivity extends AppCompatActivity implements PlayProgressLis
         int time = (null != mHistoryMovie && mHistoryMovie.playUrlId
                 == playSource.playUrls.get(position).id) ? mHistoryMovie.playTime : 0;
         PlayerSettings.getInstance(getApplicationContext())
-                .setPlayerType(PlayerSettings.PLAYER_TYPE_AUTO)
+                .setPlayerType(PlayerSettings.PLAYER_TYPE_EXO)
                 .setUsingHardwareDecoder(true)
                 .setMediaList(data)
                 .setPlayIndex(position)
