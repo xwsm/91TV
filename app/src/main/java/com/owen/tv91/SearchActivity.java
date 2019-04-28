@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -20,6 +21,7 @@ import com.owen.tv91.network.NetWorkManager;
 import com.owen.tv91.network.response.ResponseTransformer;
 import com.owen.tv91.network.schedulers.SchedulerProvider;
 import com.owen.tv91.utils.FocusBroderHelper;
+import com.owen.tv91.utils.GlideApp;
 import com.owen.tv91.utils.ToastUtils;
 import com.owen.tvgridlayout.TvGridLayout;
 import com.owen.tvrecyclerview.widget.SimpleOnItemListener;
@@ -41,6 +43,8 @@ import io.reactivex.functions.Consumer;
  */
 public class SearchActivity extends AppCompatActivity {
 
+    @BindView(R.id.activity_search_bg_iv)
+    ImageView mBgImgView;
     @BindView(R.id.activity_search_et)
     EditText mSearchEt;
     @BindView(R.id.activity_search_channel_list)
@@ -68,6 +72,8 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        GlideApp.with(this).load(R.drawable.bg).into(mBgImgView);
+
         mFocusBorder = FocusBroderHelper.create(this);
 
         mChannelRecyclerView.setOnItemListener(new SimpleOnItemListener() {

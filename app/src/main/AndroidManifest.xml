@@ -17,6 +17,7 @@
         android:icon="@drawable/icon_launcher"
         android:banner="@drawable/icon_launcher"
         android:name=".App"
+        android:largeHeap="true"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">

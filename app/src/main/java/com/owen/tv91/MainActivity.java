@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.owen.tab.TvTabLayout;
@@ -18,6 +19,7 @@ import com.owen.tv91.bean.Channel;
 import com.owen.tv91.network.NetWorkManager;
 import com.owen.tv91.network.response.ResponseTransformer;
 import com.owen.tv91.network.schedulers.SchedulerProvider;
+import com.owen.tv91.utils.GlideApp;
 import com.owen.tv91.utils.ToastUtils;
 import com.owen.tv91.widget.UpdateDialog;
 import com.owen.widget.TvViewPager;
@@ -32,6 +34,9 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity {
+
+    @BindView(R.id.activity_main_bg_iv)
+    ImageView mBgImgView;
     @BindView(R.id.search_button)
     Button mSearchBtn;
     @BindView(R.id.history_button)
@@ -59,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        GlideApp.with(this).load(R.drawable.bg).into(mBgImgView);
+
         mTabLayout.setupWithViewPager(mViewPager);
         mViewPager.setScrollerDuration(200);
 

@@ -14,9 +14,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "com.owen.tv91"
-        versionCode 7
-        versionName "0.0.7"
-
+        versionCode 8
+        versionName "0.0.8"
     }
     buildTypes {
         release {
@@ -76,12 +75,15 @@ dependencies {
     implementation 'com.owen:tv-tablayout:1.0.1'
     implementation ('com.owen:tv-widget:1.0.1')
 //    implementation project(':tv-widget')
+
     implementation project(':player')
+
+    // 友盟
     implementation 'com.umeng.umsdk:analytics:8.0.0'
     implementation 'com.umeng.umsdk:common:2.0.0'
 
-    // https://github.com/LitePalFramework/LitePal
+    // 数据库（https://github.com/LitePalFramework/LitePal）
     implementation "org.litepal.android:java:3.0.0"
-    //查看数据库及sp，电脑浏览器输入手机IP:8080 (https://github.com/amitshekhariitbhu/Android-Debug-Database)
+    // 查看数据库及sp，电脑浏览器输入手机IP:8080 (https://github.com/amitshekhariitbhu/Android-Debug-Database)
     debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
 }

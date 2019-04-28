@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -13,6 +14,7 @@ import com.owen.focus.FocusBorder;
 import com.owen.tv91.adapter.HistoryMovieListAdapter;
 import com.owen.tv91.dao.HistoryMovie;
 import com.owen.tv91.utils.FocusBroderHelper;
+import com.owen.tv91.utils.GlideApp;
 import com.owen.tvrecyclerview.widget.SimpleOnItemListener;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
 
@@ -30,6 +32,9 @@ import butterknife.ButterKnife;
  * @date 2019/3/11
  */
 public class HistoryActivity extends AppCompatActivity {
+
+    @BindView(R.id.activity_history_list_bg_iv)
+    ImageView mBgImgView;
     @BindView(R.id.activity_history_list_rv)
     TvRecyclerView mRecyclerView;
     @BindView(R.id.activity_history_list_progress_bar)
@@ -44,6 +49,8 @@ public class HistoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history_list);
         ButterKnife.bind(this);
+
+        GlideApp.with(this).load(R.drawable.bg).into(mBgImgView);
 
         FocusBorder focusBorder = FocusBroderHelper.create(this);
         focusBorder.boundGlobalFocusListener(new FocusBorder.OnFocusCallback() {

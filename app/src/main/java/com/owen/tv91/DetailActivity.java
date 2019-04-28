@@ -37,6 +37,7 @@ import com.owen.tv91.utils.GlideApp;
 import com.owen.tv91.utils.ToastUtils;
 import com.owen.tvrecyclerview.widget.SimpleOnItemListener;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
+import com.tencent.smtt.sdk.TbsVideo;
 
 import org.litepal.LitePal;
 
@@ -208,7 +209,8 @@ public class DetailActivity extends AppCompatActivity implements PlayProgressLis
         GlideApp.with(this).load(mMovieDetail.img)
                 .transform(new BlurTransformation(40, 7))
                 .into(mBgIv);
-        GlideApp.with(this).load(mMovieDetail.img).placeholder(R.drawable.icon_img_default).into(mPosterIv);
+        GlideApp.with(this)
+                .load(mMovieDetail.img).placeholder(R.drawable.icon_img_default).into(mPosterIv);
 
         mScoreTv.setVisibility(TextUtils.isEmpty(mMovieDetail.score) || TextUtils.equals(mMovieDetail.score, "0.0")
                         ? View.INVISIBLE : View.VISIBLE);
@@ -331,6 +333,15 @@ public class DetailActivity extends AppCompatActivity implements PlayProgressLis
                 .setPlayTime(time)
                 .setPlayProgressListener(this)
                 .startPlayer(DetailActivity.this);
+
+        // 腾讯X5播放器
+        /*if(TbsVideo.canUseTbsPlayer(getApplicationContext())) {
+            Bundle extraData = new Bundle();
+            extraData.putString("title", mMovieDetail.name);
+            extraData.putInt("screenMode", 102); //来实现默认全屏+控制栏等UI
+            TbsVideo.openVideo(getApplicationContext(),
+                    playSource.playUrls.get(position).playUrl, extraData);
+        }*/
     }
 
     @Override
