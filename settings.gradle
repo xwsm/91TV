@@ -1,4 +1,4 @@
-include ':app', ':player'
+include ':app', ':player', ':base'
 
 //include ':tv-recyclerview'
 //project(':tv-recyclerview').projectDir = new File('../TvRecyclerView/tv-recyclerview')

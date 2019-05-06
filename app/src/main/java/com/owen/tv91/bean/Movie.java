@@ -1,11 +1,10 @@
 package com.owen.tv91.bean;
 
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class Movie implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class Movie implements Parcelable {
 
     public long id;
     public String channel; //所属频道
@@ -106,4 +105,54 @@ public class Movie implements Serializable {
     public void setPinyinName(String pinyinName) {
         this.pinyinName = pinyinName;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.id);
+        dest.writeString(this.channel);
+        dest.writeString(this.img);
+        dest.writeString(this.name);
+        dest.writeString(this.pinyinName);
+        dest.writeString(this.sketch);
+        dest.writeString(this.score);
+        dest.writeString(this.alias);
+        dest.writeString(this.type);
+        dest.writeString(this.showDate);
+        dest.writeString(this.updateDate);
+    }
+
+    public Movie() {
+    }
+
+    protected Movie(Parcel in) {
+        this.id = in.readLong();
+        this.channel = in.readString();
+        this.img = in.readString();
+        this.name = in.readString();
+        this.pinyinName = in.readString();
+        this.sketch = in.readString();
+        this.score = in.readString();
+        this.alias = in.readString();
+        this.type = in.readString();
+        this.showDate = in.readString();
+        this.updateDate = in.readString();
+    }
+
+    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel source) {
+            return new Movie(source);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
 }

@@ -1,6 +1,17 @@
 apply plugin: 'com.android.application'
 
 android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+
+        applicationId "com.owen.tv91"
+        versionCode 8
+        versionName "0.0.8"
+    }
+
     signingConfigs {
         config {
             storeFile file('/Users/zhousuqiang/Documents/repository/github/91TV/Untitled')
@@ -9,14 +20,7 @@ android {
             storePassword 'z1301331230'
         }
     }
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    defaultConfig {
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        applicationId "com.owen.tv91"
-        versionCode 8
-        versionName "0.0.8"
-    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -31,6 +35,7 @@ android {
             signingConfig signingConfigs.config
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -77,6 +82,7 @@ dependencies {
 //    implementation project(':tv-widget')
 
     implementation project(':player')
+    implementation project(':base')
 
     // 友盟
     implementation 'com.umeng.umsdk:analytics:8.0.0'

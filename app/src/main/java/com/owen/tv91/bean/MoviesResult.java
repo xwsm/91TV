@@ -1,5 +1,8 @@
 package com.owen.tv91.bean;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
 /**
@@ -7,7 +10,7 @@ import java.util.List;
  * @email zhousuqiang@126.com
  * @date 2019/2/18
  */
-public class MoviesResult {
+public class MoviesResult implements Parcelable {
 
     public List<Movie> content;
 
@@ -99,4 +102,50 @@ public class MoviesResult {
     public void setEmpty(boolean empty) {
         this.empty = empty;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeTypedList(this.content);
+        dest.writeByte(this.last ? (byte) 1 : (byte) 0);
+        dest.writeInt(this.totalPages);
+        dest.writeInt(this.totalElements);
+        dest.writeInt(this.numberOfElements);
+        dest.writeInt(this.size);
+        dest.writeInt(this.number);
+        dest.writeByte(this.first ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.empty ? (byte) 1 : (byte) 0);
+    }
+
+    public MoviesResult() {
+    }
+
+    protected MoviesResult(Parcel in) {
+        this.content = in.createTypedArrayList(Movie.CREATOR);
+        this.last = in.readByte() != 0;
+        this.totalPages = in.readInt();
+        this.totalElements = in.readInt();
+        this.numberOfElements = in.readInt();
+        this.size = in.readInt();
+        this.number = in.readInt();
+        this.first = in.readByte() != 0;
+        this.empty = in.readByte() != 0;
+    }
+
+    public static final Parcelable.Creator<MoviesResult> CREATOR = new Parcelable.Creator<MoviesResult>() {
+        @Override
+        public MoviesResult createFromParcel(Parcel source) {
+            return new MoviesResult(source);
+        }
+
+        @Override
+        public MoviesResult[] newArray(int size) {
+            return new MoviesResult[size];
+        }
+    };
 }

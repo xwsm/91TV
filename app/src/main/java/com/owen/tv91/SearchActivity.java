@@ -2,6 +2,7 @@ package com.owen.tv91;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -12,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.owen.base.frame.MvpBaseActivity;
+import com.owen.base.frame.MvpBaseView;
 import com.owen.focus.FocusBorder;
 import com.owen.tv91.adapter.MovieListAdapter;
 import com.owen.tv91.adapter.SearchChannelsAdapter;
@@ -20,6 +23,7 @@ import com.owen.tv91.bean.SearchWithChannel;
 import com.owen.tv91.network.NetWorkManager;
 import com.owen.tv91.network.response.ResponseTransformer;
 import com.owen.tv91.network.schedulers.SchedulerProvider;
+import com.owen.tv91.presenter.SearchPresenter;
 import com.owen.tv91.utils.FocusBroderHelper;
 import com.owen.tv91.utils.GlideApp;
 import com.owen.tv91.utils.ToastUtils;
@@ -41,7 +45,7 @@ import io.reactivex.functions.Consumer;
  * @email zhousuqiang@126.com
  * @date 2019/1/18
  */
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends MvpBaseActivity<SearchPresenter, MvpBaseView> {
 
     @BindView(R.id.activity_search_bg_iv)
     ImageView mBgImgView;
@@ -59,23 +63,31 @@ public class SearchActivity extends AppCompatActivity {
     private FocusBorder mFocusBorder;
     private List<SearchWithChannel> mChannels;
     private List<Movie> mMovies = new ArrayList<>();
-    private Disposable mSearchDisposable;
-    private int mSelectedChannelPosition = 0;
 
+    private int mSelectedChannelPosition = -1;
+
+    @NonNull
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
-        ButterKnife.bind(this);
-
-        initView();
+    protected SearchPresenter onCreatePresenter() {
+        return new SearchPresenter();
     }
 
-    private void initView() {
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_search;
+    }
+
+    @Override
+    protected void initViews() {
+        ButterKnife.bind(this);
+
         GlideApp.with(this).load(R.drawable.bg).into(mBgImgView);
 
         mFocusBorder = FocusBroderHelper.create(this);
+    }
 
+    @Override
+    protected void initListeners() {
         mChannelRecyclerView.setOnItemListener(new SimpleOnItemListener() {
             @Override
             public void onItemClick(TvRecyclerView parent, View itemView, int position) {
@@ -85,9 +97,7 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public void onItemSelected(TvRecyclerView parent, View itemView, int position) {
-                if(mSelectedChannelPosition != position) {
-                    onSelectedChannel(position);
-                }
+                onSelectedChannel(position);
             }
         });
 
@@ -146,9 +156,11 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void onSelectedChannel(int position) {
-        mSelectedChannelPosition = position;
-        mMovies = mChannels.get(mSelectedChannelPosition).movies;
-        mRecyclerView.setAdapter(new MovieListAdapter(SearchActivity.this, mMovies), true);
+        if(mSelectedChannelPosition != position) {
+            mSelectedChannelPosition = position;
+            mMovies = mChannels.get(mSelectedChannelPosition).movies;
+            mRecyclerView.setAdapter(new MovieListAdapter(SearchActivity.this, mMovies), true);
+        }
     }
 
     private void onSearch() {
@@ -156,32 +168,8 @@ public class SearchActivity extends AppCompatActivity {
         mChannelRecyclerView.setVisibility(View.GONE);
         final String word = mSearchEt.getText().toString();
         if(!TextUtils.isEmpty(word)) {
-            if(null != mSearchDisposable && !mSearchDisposable.isDisposed()) {
-                mSearchDisposable.dispose();
-            }
             mProgressBar.setVisibility(View.VISIBLE);
-            mSearchDisposable = NetWorkManager.getRequest().searchWithChannel(word)
-                    .compose(SchedulerProvider.getInstance().applySchedulers())
-                    .compose(ResponseTransformer.handleResult())
-                    .subscribe(new Consumer<List<SearchWithChannel>>() {
-                        @Override
-                        public void accept(List<SearchWithChannel> channels) throws Exception {
-                            mProgressBar.setVisibility(View.GONE);
-                            if(null != channels && !channels.isEmpty()) {
-                                mRecyclerView.setVisibility(View.VISIBLE);
-                                mChannelRecyclerView.setVisibility(View.VISIBLE);
-                                mChannels = channels;
-                                mChannelRecyclerView.setAdapter(new SearchChannelsAdapter(SearchActivity.this, mChannels), true);
-                                onSelectedChannel(0);
-                            }
-                        }
-                    }, new Consumer<Throwable>() {
-                        @Override
-                        public void accept(Throwable throwable) throws Exception {
-                            ToastUtils.showShortToast("搜索失败！");
-                        }
-                    });
-
+            mPresenter.requestSearch(word);
         } else {
             if(null != mRecyclerView.getAdapter()) {
                 mMovies.clear();
@@ -190,11 +178,27 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
+
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if(null != mSearchDisposable) {
-            mSearchDisposable.dispose();
+    public void onPresenterEvent(int code, @Nullable Bundle bundle) {
+        switch (code) {
+            case SearchPresenter.CODE_LOAD_SUCCESS:
+                mProgressBar.setVisibility(View.GONE);
+                if(null != bundle) {
+                    List<SearchWithChannel> channels = bundle.getParcelableArrayList(SearchPresenter.KEY_SEARCH_WITH_CHANNEL);
+                    if (null != channels && !channels.isEmpty()) {
+                        mRecyclerView.setVisibility(View.VISIBLE);
+                        mChannelRecyclerView.setVisibility(View.VISIBLE);
+                        mChannels = channels;
+                        mChannelRecyclerView.setAdapter(new SearchChannelsAdapter(SearchActivity.this, mChannels), true);
+                        onSelectedChannel(0);
+                    }
+                }
+                break;
+
+            case SearchPresenter.CODE_LOAD_FAILURE:
+                mProgressBar.setVisibility(View.GONE);
+                break;
         }
     }
 }

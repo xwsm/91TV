@@ -1,7 +1,10 @@
 package com.owen.tv91.bean;
 
 
-public class PlayUrl {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class PlayUrl implements Parcelable {
 
     public long id;
     public String name;
@@ -57,4 +60,44 @@ public class PlayUrl {
     public void setMovieId(long movieId) {
         this.movieId = movieId;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.id);
+        dest.writeString(this.name);
+        dest.writeString(this.playUrl);
+        dest.writeLong(this.sourceId);
+        dest.writeLong(this.movieId);
+        dest.writeString(this.updateDate);
+    }
+
+    public PlayUrl() {
+    }
+
+    protected PlayUrl(Parcel in) {
+        this.id = in.readLong();
+        this.name = in.readString();
+        this.playUrl = in.readString();
+        this.sourceId = in.readLong();
+        this.movieId = in.readLong();
+        this.updateDate = in.readString();
+    }
+
+    public static final Parcelable.Creator<PlayUrl> CREATOR = new Parcelable.Creator<PlayUrl>() {
+        @Override
+        public PlayUrl createFromParcel(Parcel source) {
+            return new PlayUrl(source);
+        }
+
+        @Override
+        public PlayUrl[] newArray(int size) {
+            return new PlayUrl[size];
+        }
+    };
 }

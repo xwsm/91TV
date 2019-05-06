@@ -1,12 +1,12 @@
 package com.owen.tv91.bean;
 
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
-public class MovieDetail implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class MovieDetail implements Parcelable {
 
     public long id;
     public String channel; //所属频道
@@ -167,4 +167,68 @@ public class MovieDetail implements Serializable {
     public void setTypes(String types) {
         this.types = types;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.id);
+        dest.writeString(this.channel);
+        dest.writeString(this.img);
+        dest.writeString(this.name);
+        dest.writeString(this.sketch);
+        dest.writeString(this.score);
+        dest.writeString(this.alias);
+        dest.writeString(this.director);
+        dest.writeString(this.starring);
+        dest.writeString(this.type);
+        dest.writeString(this.types);
+        dest.writeString(this.area);
+        dest.writeString(this.language);
+        dest.writeString(this.showDate);
+        dest.writeString(this.duration);
+        dest.writeString(this.updateDate);
+        dest.writeString(this.intro);
+        dest.writeTypedList(this.playSources);
+    }
+
+    public MovieDetail() {
+    }
+
+    protected MovieDetail(Parcel in) {
+        this.id = in.readLong();
+        this.channel = in.readString();
+        this.img = in.readString();
+        this.name = in.readString();
+        this.sketch = in.readString();
+        this.score = in.readString();
+        this.alias = in.readString();
+        this.director = in.readString();
+        this.starring = in.readString();
+        this.type = in.readString();
+        this.types = in.readString();
+        this.area = in.readString();
+        this.language = in.readString();
+        this.showDate = in.readString();
+        this.duration = in.readString();
+        this.updateDate = in.readString();
+        this.intro = in.readString();
+        this.playSources = in.createTypedArrayList(PlaySource.CREATOR);
+    }
+
+    public static final Parcelable.Creator<MovieDetail> CREATOR = new Parcelable.Creator<MovieDetail>() {
+        @Override
+        public MovieDetail createFromParcel(Parcel source) {
+            return new MovieDetail(source);
+        }
+
+        @Override
+        public MovieDetail[] newArray(int size) {
+            return new MovieDetail[size];
+        }
+    };
 }
